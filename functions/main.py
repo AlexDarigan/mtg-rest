@@ -5,6 +5,7 @@ from api.v1 import measures, trends
 from concurrent.futures import wait
 from datetime import datetime
 
+
 # Initialization
 options.set_global_options(max_instances=1, memory=options.MemoryOption.GB_4, cpu=2, timeout_sec=540)
 initialize_app()
@@ -31,11 +32,14 @@ initialize_app()
 # v1/measure/color?start=?&end=?&cost=?&card_type=?
 @https_fn.on_request()
 def get_color_measures(request):
-    return measures.get_color_measures(dao=dao, start="19940101", end="20221111",
-                                cardtype="any", min_cost=3, max_cost=10)
-
-#    # measures.get_color_measures(dao=dao, start=req.ar)
-#     return "Color Measures" # Mean/Mode/Min/Max/Sum/Median
+    start = "19940101"
+    end = "20231111"
+    return measures.get_color_measures(
+        dao=dao, 
+        start=start, end=end,
+        min_cost=0, max_cost=16,
+        cardtype="any")
+    
 
 # # v1/measure/card_type?start=?&end=?&cost=?&color=?
 # @https_fn.on_request()
