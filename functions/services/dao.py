@@ -22,6 +22,7 @@ def begin_run_chunk(chunked):
                         "batch_count": chunked["batch_count"],
                         "start": time.time()
                     }))
+    return chunk
 
 def end_run_chunk(chunk):
     chunk.update({"end": firestore.SERVER_TIMESTAMP, "took": time.time() - chunk["start"]})
