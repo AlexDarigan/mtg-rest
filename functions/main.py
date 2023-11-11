@@ -26,73 +26,39 @@ from concurrent.futures import wait
 from datetime import datetime
 from firebase_functions import options, scheduler_fn, https_fn, pubsub_fn
 from firebase_admin import initialize_app, firestore
-from google.cloud import pubsub_v1
-import json
 import time
 
-from fetcher import fetch_cards
-from transformer import transform
-import flask
-
+from services import gatherer, preprocessor, publisher, dao
 
 # TODO
 # Split into Routes, Services & Utils
 options.set_global_options(max_instances=1, memory=options.MemoryOption.GB_4, cpu=2, timeout_sec=540)
 
 initialize_app()
-app = flask.Flask(__name__)
 
-@app.get("/hello")
-def greeting():
-    print("getting hello\n", flush=True)
-    return flask.Response(response="Hello World")
-
+# Measures
 @https_fn.on_request()
-def bye(req):
-    return "Bye"
+def get_measure(request: https_fn.Request) -> https_fn.Response:
+    return "Measures not implemented"
 
+# Price Trends
 @https_fn.on_request()
-def world(req):
-    return https_fn.Response(response="Hello from Google")
+def get_price_trend(request: https_fn.Request) -> https_fn.Response:
+    return "Trends not implemented"
 
-@https_fn.on_request()
-def dispatcher(req: https_fn.Request) -> https_fn.Response:
-    print("requested: req.url\n", flush=True)
-    with app.request_context(req.environ):
-        return app.full_dispatch_request()
-
-def chunk_documents(documents, chunk_size = 500):      
-    for i in range(0, len(documents), chunk_size):  
-        yield documents[i:i + chunk_size]
 
 @scheduler_fn.on_schedule(schedule="0 3 * * *")
 def publish_cards(event):
-    
+    # get client
     db = firestore.client()
     
+    # addRun()
     _, run = db.collection("run").add({"start": firestore.SERVER_TIMESTAMP})
         
-    publisher = pubsub_v1.PublisherClient()
-    data = fetch_cards("https://api.scryfall.com/bulk-data/default-cards")
-    cards = transform(data)
+    data = gatherer.fetch_cards("https://api.scryfall.com/bulk-data/default-cards")
+    cards = preprocessor.transform(data)
+    wait(publisher.publish(run.id, cards))
     
-    total = len(cards)
-    futures = []
-    count = 0
-    for chunk in chunk_documents(cards, chunk_size=500):
-        body = {
-            "runId": run.id,
-            "batch_count": len(chunk),
-            "batch_total": total,
-            "chunk": chunk,
-            "count": count,
-        }
-        print(f'{datetime.now()}: Sending Chunk {count}')
-        future = publisher.publish("projects/mtg-rest/topics/cards", json.dumps(body).encode("utf8"))
-        print(f'{datetime.now()}: Sent Chunk {count}')
-        count += 1
-        futures.append(future)
-    wait(futures)
     run.update({"end": firestore.SERVER_TIMESTAMP})
     print("end -> ", datetime.now(), flush=True)
         
