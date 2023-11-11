@@ -14,8 +14,7 @@
   "hosting": {
     "source": "frontend",
     "rewrites": [
-      {"source": "/api/v1/measure", "function": "get_measure"},
-      {"source": "/api/v1/trend", "function": "get_price_trend"}
+      {"source": "/api/v1/measure/color", "function": "get_color_measures" }
     ],
     "ignore": [
       "firebase.json",

@@ -1,6 +1,8 @@
 import time
 from datetime import datetime
 from firebase_admin import initialize_app, firestore
+from google.cloud.firestore_v1.base_query import FieldFilter, And
+
 
 def begin_run():
     db = firestore.client()
@@ -40,3 +42,18 @@ def add_card_batch(chunked):
 
         batch.set(card, doc, merge=True)
     batch.commit()
+    
+def get_cards_released_between(start, end):
+    start = datetime.fromisoformat(start)
+    end = datetime.fromisoformat(end)
+    db = firestore.client()
+    query = (db.collection("cards")
+     .where(filter=FieldFilter("released", ">", start))
+     .where(filter=FieldFilter("released", "<", end))
+     .stream())
+    start = time.time()
+    for doc in query:
+        print(doc.id)
+    print(query)
+    print("TOOK: ", time.time() - start)
+    return query
