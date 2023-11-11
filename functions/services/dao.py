@@ -25,7 +25,7 @@ def begin_run_chunk(chunked):
     return chunk
 
 def end_run_chunk(chunk):
-    chunk.update({"end": firestore.SERVER_TIMESTAMP, "took": time.time() - chunk["start"]})
+    chunk.update({"end": firestore.SERVER_TIMESTAMP, "took": time.time() - chunk.get().to_dict()["start"]})
 
 def add_card_batch(chunked):
     db = firestore.client()
