@@ -12,7 +12,11 @@
     }
   ],
   "hosting": {
-    "source": "hosting",
+    "source": "frontend",
+    "rewrites": [
+      {"source": "/api/**", "function": "dispatcher"},
+      {"source": "/bye", "function": "bye"}
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",

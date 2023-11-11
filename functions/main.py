@@ -42,21 +42,22 @@ options.set_global_options(max_instances=1, memory=options.MemoryOption.GB_4, cp
 initialize_app()
 app = flask.Flask(__name__)
 
-
 @app.get("/hello")
-def getGreeting():
-    args = flask.request.args
-    print(args)
-    print(args.get("land", None))
-    return flask.Response(status=200, response="Hello From Flask")
+def greeting():
+    print("getting hello\n", flush=True)
+    return flask.Response(response="Hello World")
 
+@https_fn.on_request()
+def bye(req):
+    return "Bye"
 
 @https_fn.on_request()
 def world(req):
     return https_fn.Response(response="Hello from Google")
 
 @https_fn.on_request()
-def sampleroute(req: https_fn.Request) -> https_fn.Response:
+def dispatcher(req: https_fn.Request) -> https_fn.Response:
+    print("requested: req.url\n", flush=True)
     with app.request_context(req.environ):
         return app.full_dispatch_request()
 
