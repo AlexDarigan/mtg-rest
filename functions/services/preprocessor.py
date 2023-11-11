@@ -3,11 +3,7 @@ import pandas as pd
 from firebase_admin import firestore
 
 def transform(data):
-    # FILTER CARD DATA
-    print(datetime.now(), ": Normalizing Card Data")
     df = pd.json_normalize(data)
-
-    print(datetime.now(), ": Filtering Card Data")
 
     # Simple Conversions
     df["released"] = pd.to_datetime(df["released_at"], errors='coerce').astype(str)
@@ -46,8 +42,6 @@ def transform(data):
                                             "promo", "reprint", "variation", "set_id", "rarity", "full_art",
                                             "usd", "usd_foil", "eur", "eur_foil"])
 
-
-    print(datetime.now(), ": Writing Documents", flush=True)
     cards = df.to_dict(orient="records")
     year, month, day = str(datetime.now().date()).split("-")
     for card in cards:
@@ -68,5 +62,4 @@ def transform(data):
         del card["usd"]
         del card["usd_foil"]
         del card["eur_foil"]
-       # del card["released"]
     return cards
