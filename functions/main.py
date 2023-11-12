@@ -17,7 +17,7 @@ def get_color_measures(request):
     start = datetime.fromisoformat(request.args.get("start", "19930805")) # August 5th 1993 - When MTG was released
     end = request.args.get("end", datetime.now().isoformat())
     cardtypes = request.args.get("types", "A")
-    result = measures.get_color_measures(start=start, end=end, cardtype=cardtypes)
+    result = measures.get_color_measures(start=start, end=end, cardtypes=cardtypes)
     return json.dumps(result).encode("utf8")
 
 # # v1/measure/color?start=?&end=?&colors=?
