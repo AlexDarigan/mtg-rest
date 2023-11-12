@@ -20,7 +20,7 @@ def get_color_measures(request: https_fn.Request):
     result = measures.get_color_measures(start=start, end=end, cardtypes=cardtypes)
     return json.dumps(result).encode("utf8")
 
-# # v1/measure/color?start=?&end=?&colors=?
+# v1/measure/color?start=?&end=?&colors=?
 @https_fn.on_request()
 def get_card_type_measures(request):
     start = datetime.fromisoformat(request.args.get("start", "19930805")) # August 5th 1993 - When MTG was released
@@ -29,9 +29,9 @@ def get_card_type_measures(request):
     result = measures.get_card_type_measures(start=start, end=end, colors=colors)
     return json.dumps(result).encode("utf8")
     
-# # Price Trends
+# v1/price/trends?=name
 @https_fn.on_request()
-def get_price_trend(request):
+def get_price_trends(request):
      cardname = request.args.get("name")
      result = trends.get_price_trend(cardname)
      return json.dumps(result).encode("utf8")
