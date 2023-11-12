@@ -5,28 +5,41 @@ from google.cloud.firestore_v1.base_query import FieldFilter, And, Or
 import time
 import statistics
 
-def _get_color_booleans(colors):
-    if "A" in colors:
-        return(True, True, True, True, True, True)
-    else:
-        return ("R" in colors, "G" in colors, "U" in colors, "W" in colors, "B" in colors, "N" in colors)
+def _get_color_filters(colors):
+    filters = []
+    for color in colors:
+        match color:
+            case "R": filters.append(FieldFilter("red", "==", True))
+            case "G": filters.append(FieldFilter("green", "==", True))
+            case "U": filters.append(FieldFilter("blue", "==", True))
+            case "W": filters.append(FieldFilter("white", "==", True))
+            case "B": filters.append(FieldFilter("black", "==", True))
+            case "N": filters.append(FieldFilter("colorless", "==", True))
+            case "A": 
+                for color in ["red", "green", "blue", "white", "black", "colorless"]:
+                    filters.append(FieldFilter(color, "==", True))
+    return Or(filters=filters)
     
 def _get_card_type_filters(cardtypes):
     filters = []
     for card_key in cardtypes:
         match card_key:
-            case "C": filters.append("Creature")
-            case "A": filters.append("Artifact")
-            case "E": filters.append("Enchantment")
-            case "I": filters.append("Instant")
-            case "S": filters.append("Sorcery")
-            case "L": filters.append("Land")
-            case "A": filters = ["Land", "Creature", "Artifact", "Enchantment", "Sorcery", "Land"]
-    return filters
+            case "C": filters.append(FieldFilter("Creature", "==", True))
+            case "A": filters.append(FieldFilter("Artifact", "==", True))
+            case "E": filters.append(FieldFilter("Enchantment", "==", True))
+            case "I": filters.append(FieldFilter("Instant", "==", True))
+            case "S": filters.append(FieldFilter("Sorcery", "==", True))
+            case "L": filters.append(FieldFilter("Land", "==", True))
+            case "A": 
+                for card_type in ["Land", "Creature", "Artifact", "Enchantment", "Sorcery"]:
+                    filters.append(FieldFilter(card_type, "==", True))
+    return Or(filters=filters)
 
 def get_color_measures(start, end, cardtypes):
     db = firestore.client()
     
+    type_filter = _get_card_type_filters(cardtypes=cardtypes)
+        
     begin = time.time()
     results = {}
     for color in ["red", "green", "blue", "black", "white", "colorless"]:
@@ -34,7 +47,7 @@ def get_color_measures(start, end, cardtypes):
                 .where(filter=FieldFilter("released", ">", start))
                 .where(filter=FieldFilter("released", "<", end))
                 .where(filter=FieldFilter(color, "==", True))
-                .where(filter=FieldFilter("types", "array_contains_any", ["Creature", "Land", "Artifact", "Enchantment", "Sorcery", "Instant"]))
+                .where(filter=type_filter)
             )
         results[color] = aggregation.AggregationQuery(query).count().get()[0][0].value
 
@@ -50,13 +63,13 @@ def get_color_measures(start, end, cardtypes):
         results["colorless"]: "colorless",
     }
     
-    values = results.values()
+    values = list(results.values())
     mode = statistics.mode(values)
     median = statistics.median(values + [0])
     average = statistics.mean(values)
-    maximum = max(results.values)
-    minimum = max(results.values)
-    total = sum(results.values)
+    maximum = max(values)
+    minimum = max(values)
+    total = sum(values)
 
     return {
         "min": reverseIndex[minimum],
@@ -71,7 +84,7 @@ def get_color_measures(start, end, cardtypes):
 def get_card_type_measures(start, end, colors):
     db = firestore.client()
 
-    red, green, blue, white, black, colorless = _get_color_booleans(colors)
+    color_filters = _get_color_filters(colors)
     
     begin = time.time()
     results = {}
@@ -80,12 +93,7 @@ def get_card_type_measures(start, end, colors):
                 .where(filter=FieldFilter("released", ">", start))
                 .where(filter=FieldFilter("released", "<", end))
                 .where(filter=FieldFilter(card_type, "==", True))
-                .where(filter=FieldFilter("Red", "==", red))
-                .where(filter=FieldFilter("Blue", "==", blue))
-                .where(filter=FieldFilter("Green", "==", green))
-                .where(filter=FieldFilter("Black", "==", black))
-                .where(filter=FieldFilter("White", "==", white))
-                .where(filter=FieldFilter("Colorless", "==", colorless))
+                .where(filter=color_filters)
         )
         results[card_type] = aggregation.AggregationQuery(query).count().get()[0][0].value
 
@@ -99,13 +107,13 @@ def get_card_type_measures(start, end, colors):
         results["Artifact"]: "Artifact",
     }
     
-    values = results.values()
+    values = list(results.values())
     mode = statistics.mode(values)
     median = statistics.median(values + [0])
     average = statistics.mean(values)
-    maximum = max(results.values)
-    minimum = max(results.values)
-    total = sum(results.values)
+    maximum = max(values)
+    minimum = max(values)
+    total = sum(values)
 
     return {
         "min": reverseIndex[minimum],

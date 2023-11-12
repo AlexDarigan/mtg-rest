@@ -1,23 +1,19 @@
 from functions.services import dao
 from functions.api.v1 import measures
 from firebase_admin import initialize_app
+from datetime import datetime
 
 app = initialize_app(options={"projectId": "mtg-rest"})
 
-r = measures.get_color_measures(
-    dao=dao, 
-    start="19940101", 
-    end="20231111", 
-    min_cost=0,
-    max_cost=16,
-    cardtype="A")
-print(r)
+# r = measures.get_color_measures(
+#     start=datetime.fromisoformat("19940101"), 
+#     end=datetime.fromisoformat("20231111"), 
+#     cardtypes="A")
+# print(r)
 
 measures.get_card_type_measures( 
-    start="19940101", 
-    end="20231111", 
-    min_cost=0,
-    max_cost=16,
+    start=datetime.fromisoformat("19940101"), 
+    end=datetime.fromisoformat("20231111"), 
     colors="A")
 
 # # Create a reference to the cities collection

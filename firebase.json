@@ -14,7 +14,8 @@
   "hosting": {
     "source": "frontend",
     "rewrites": [
-      {"source": "/api/v1/measure/color", "function": "get_color_measures" }
+      {"source": "/api/v1/measure/color", "function": "get_color_measures" },
+      {"source": "/api/v1/measure/cardtypes", "function": "get_card_type_measures"}
     ],
     "ignore": [
       "firebase.json",
