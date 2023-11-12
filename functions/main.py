@@ -1,57 +1,34 @@
 from firebase_admin import initialize_app
 from firebase_functions import options, scheduler_fn, https_fn, pubsub_fn
-from services import gatherer, preprocessor, publisher, dao #, Service: DataExplorer (? <--- ) / API thing
+from services import gatherer, preprocessor, publisher, dao
 from api.v1 import measures, trends
 from concurrent.futures import wait
 from datetime import datetime
-
+import json
 
 # Initialization
 options.set_global_options(max_instances=1, memory=options.MemoryOption.GB_4, cpu=2, timeout_sec=540)
 initialize_app()
 
 # API Calls
-
-# Measures
-#@https_fn.on_request()
-# def get_measure(request):
-#     YYYY_MM_DD = "%Y%m%d"
-#     YYYY_MM_DD = "%Y%m%d"
-#     start = request.args.get("start", "20231103")
-#     end = request.args.get("end", datetime.now().strftime(YYYY_MM_DD))
-#     measures = request.args.get("of")
-#     cost = request.args("cmc")
-#     card_type = request.args("card_type")
-#     return measures.get_mean(
-#         start = start, end = end, 
-#         of="color", cmc= -1, card_type = )
-
-# mode/median/mean max/min/sum    
-
-# We can 
-# v1/measure/color?start=?&end=?&cost=?&card_type=?
+# v1/measure/color?start=?&end=?&card_types=?
 @https_fn.on_request()
 def get_color_measures(request):
-    start = "19940101"
-    end = "20231111"
-    return measures.get_color_measures(
-        dao=dao, 
-        start=start, end=end,
-        min_cost=0, max_cost=16,
-        cardtype="any")
+    start = datetime.fromisoformat(request.args.get("start", "19930805")) # August 5th 1993 - When MTG was released
+    end = request.args.get("end", datetime.now().isoformat())
+    cardtypes = request.args.get("types", "A")
+    result = measures.get_color_measures(start=start, end=end, cardtype=cardtypes)
+    return json.dumps(result).encode("utf8")
+
+# # v1/measure/color?start=?&end=?&colors=?
+@https_fn.on_request()
+def get_card_type_measures(request):
+    start = datetime.fromisoformat(request.args.get("start", "19930805")) # August 5th 1993 - When MTG was released
+    end = request.args.get("end", datetime.now().isoformat())
+    colors = request.args.get("colors", "A")
+    result = measures.get_card_type_measures(start=start, end=end, colors=colors)
+    return json.dumps(result).encode("utf8")
     
-
-# # v1/measure/card_type?start=?&end=?&cost=?&color=?
-# @https_fn.on_request()
-# def get_card_type_measures(request):
-#     return "Card Type Measures"
-
-# # v1/measure/cost?start=?&end=?&color=?&card_type=?
-# @https_fn.on_request()
-# def get_cost_measures(request):
-#     return "Cost Measures"
-
-
 # # Price Trends
 # @https_fn.on_request()
 # def get_price_trend(request):

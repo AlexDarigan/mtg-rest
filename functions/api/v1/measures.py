@@ -1,4 +1,3 @@
-# Measures = Mean/Mode/Median/Max/Min/Sum
 from firebase_admin import initialize_app, firestore
 from google.cloud.firestore_v1 import aggregation
 from datetime import datetime
@@ -12,68 +11,69 @@ def _get_color_booleans(colors):
     else:
         return ("R" in colors, "G" in colors, "U" in colors, "W" in colors, "B" in colors, "N" in colors)
     
-def _get_type_booleans(types):
-    if "A" in types:
-        return (True, True, True, True, True, True)
-    else:
-        return ("L" in types, "C" in types, "S" in types, "I" in types, "E" in types, "A" in types)
-
-def _get_cost_filters(min, max):
+def _get_card_type_filters(cardtypes):
     filters = []
-    for cost in range(min, max):
-        filters.append(FieldFilter("cmc", "==", cost))
-    return Or(filters=filters)
+    for card_key in cardtypes:
+        match card_key:
+            case "C": filters.append("Creature")
+            case "A": filters.append("Artifact")
+            case "E": filters.append("Enchantment")
+            case "I": filters.append("Instant")
+            case "S": filters.append("Sorcery")
+            case "L": filters.append("Land")
+            case "A": filters = ["Land", "Creature", "Artifact", "Enchantment", "Sorcery", "Land"]
+    return filters
 
-def get_color_measures(dao, start, end, cardtype, min_cost = 1, max_cost = 16):
-    start = datetime.fromisoformat(start)
-    end = datetime.fromisoformat(end)
+def get_color_measures(start, end, cardtypes):
     db = firestore.client()
     
-    cost_filters = _get_cost_filters(min_cost, max_cost)
-    land, creature, sorcery, instant, enchantment, artifact = _get_type_booleans(cardtype)
-        
-    starttime = time.time()
+    begin = time.time()
     results = {}
     for color in ["red", "green", "blue", "black", "white", "colorless"]:
         query = (db.collection("cards")
                 .where(filter=FieldFilter("released", ">", start))
                 .where(filter=FieldFilter("released", "<", end))
                 .where(filter=FieldFilter(color, "==", True))
-                .where(filter=FieldFilter("Land", "==", land))
-                .where(filter=FieldFilter("Creature", "==", creature))
-                .where(filter=FieldFilter("Artifact", "==", sorcery))
-                .where(filter=FieldFilter("Enchantment", "==", sorcery))
-                .where(filter=FieldFilter("Instant", "==", instant))
-                .where(filter=FieldFilter("Sorcery", "==", sorcery))
-                .where(filter=cost_filters)
+                .where(filter=FieldFilter("types", "array_contains_any", ["Creature", "Land", "Artifact", "Enchantment", "Sorcery", "Instant"]))
             )
-        retval = aggregation.AggregationQuery(query).count().get()
-        results[color] = retval[0][0].value
-    
-    print("took: ", time.time() - starttime)
-    
-    
-    # values = [redT, blueT, blackT, greenT, whiteT, colorlessT]
-    # average = statistics.mean(values)
-    # mode = statistics.mode(values)
-    # median = statistics.median(values)
-    # took = time.time() - start
-    # print("took: ", took)
-    # # need to get keys too, lol.
-    # print(average, mode, median)
-    # return str({"median": median, "mode": mode, "average": average})
+        results[color] = aggregation.AggregationQuery(query).count().get()[0][0].value
 
-def get_card_type_measures(start, end, colors = "A", min_cost = 1, max_cost = 20):
-    # get cards within_range & cost = ? & get(color) == True (colors are seperated currently?)
     
-    start = datetime.fromisoformat(start)
-    end = datetime.fromisoformat(end)
+    print("took: ", time.time() - begin)
+    print(results)
+    reverseIndex = {
+        results["red"]: "red",
+        results["blue"]: "blue",
+        results["green"]: "green",
+        results["black"]: "black",
+        results["white"]: "white",
+        results["colorless"]: "colorless",
+    }
     
-    red, green, blue, white, black, colorless = _get_color_booleans(colors)
-    cost_filters = _get_cost_filters(min_cost, max_cost)
+    values = results.values()
+    mode = statistics.mode(values)
+    median = statistics.median(values + [0])
+    average = statistics.mean(values)
+    maximum = max(results.values)
+    minimum = max(results.values)
+    total = sum(results.values)
 
-    start = time.time()
+    return {
+        "min": reverseIndex[minimum],
+        "max": reverseIndex[maximum],
+        "mode": reverseIndex[mode],
+        "median": reverseIndex[median],
+        "average": average,
+        "values": results,
+        "total": total
+    }
+    
+def get_card_type_measures(start, end, colors):
     db = firestore.client()
+
+    red, green, blue, white, black, colorless = _get_color_booleans(colors)
+    
+    begin = time.time()
     results = {}
     for card_type in ["Land", "Creature", "Sorcery", "Instant", "Enchantment", "Artifact"]:
         query = (db.collection("cards")
@@ -86,21 +86,33 @@ def get_card_type_measures(start, end, colors = "A", min_cost = 1, max_cost = 20
                 .where(filter=FieldFilter("Black", "==", black))
                 .where(filter=FieldFilter("White", "==", white))
                 .where(filter=FieldFilter("Colorless", "==", colorless))
-                .where(filter=cost_filters))
-        retval = aggregation.AggregationQuery(query).count().get()
-        results[card_type] = retval[0][0].value
-    print("took: ", time.time() - start)
-    return results
+        )
+        results[card_type] = aggregation.AggregationQuery(query).count().get()[0][0].value
+
+    print("took: ", time.time() - begin)
+    reverseIndex = {
+        results["Land"]: "Land",
+        results["Creature"]: "Creature",
+        results["Enchantment"]: "Enchantment",
+        results["Instant"]: "Instant",
+        results["Sorcery"]: "Sorcery",
+        results["Artifact"]: "Artifact",
+    }
     
+    values = results.values()
+    mode = statistics.mode(values)
+    median = statistics.median(values + [0])
+    average = statistics.mean(values)
+    maximum = max(results.values)
+    minimum = max(results.values)
+    total = sum(results.values)
 
-def get_cost_measures(start, end, color, type):
-    pass
-
-
-# calculations
-# max()
-# mean()
-# min()
-# sum()
-# median()
-# average()
+    return {
+        "min": reverseIndex[minimum],
+        "max": reverseIndex[maximum],
+        "mode": reverseIndex[mode],
+        "median": reverseIndex[median],
+        "average": average,
+        "values": results,
+        "total": total
+    }

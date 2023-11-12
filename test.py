@@ -4,13 +4,14 @@ from firebase_admin import initialize_app
 
 app = initialize_app(options={"projectId": "mtg-rest"})
 
-measures.get_color_measures(
+r = measures.get_color_measures(
     dao=dao, 
     start="19940101", 
     end="20231111", 
     min_cost=0,
     max_cost=16,
     cardtype="A")
+print(r)
 
 measures.get_card_type_measures( 
     start="19940101", 
