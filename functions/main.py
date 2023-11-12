@@ -13,9 +13,9 @@ initialize_app()
 # API Calls
 # v1/measure/color?start=?&end=?&card_types=?
 @https_fn.on_request()
-def get_color_measures(request):
+def get_color_measures(request: https_fn.Request):
     start = datetime.fromisoformat(request.args.get("start", "19930805")) # August 5th 1993 - When MTG was released
-    end = request.args.get("end", datetime.now().isoformat())
+    end = datetime.fromisoformat(request.args.get("end", datetime.now().isoformat()))
     cardtypes = request.args.get("types", "A")
     result = measures.get_color_measures(start=start, end=end, cardtypes=cardtypes)
     return json.dumps(result).encode("utf8")
@@ -24,7 +24,7 @@ def get_color_measures(request):
 @https_fn.on_request()
 def get_card_type_measures(request):
     start = datetime.fromisoformat(request.args.get("start", "19930805")) # August 5th 1993 - When MTG was released
-    end = request.args.get("end", datetime.now().isoformat())
+    end = datetime.fromisoformat(request.args.get("end", datetime.now().isoformat()))
     colors = request.args.get("colors", "A")
     result = measures.get_card_type_measures(start=start, end=end, colors=colors)
     return json.dumps(result).encode("utf8")
