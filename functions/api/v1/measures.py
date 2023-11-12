@@ -6,82 +6,17 @@ from google.cloud.firestore_v1.base_query import FieldFilter, And, Or
 import time
 import statistics
 
-def get_color_measures(dao, start, end, cardtype, min_cost = 1, max_cost = 20):
+def _get_color_booleans(colors):
+    if "A" in colors:
+        return(True, True, True, True, True, True)
+    else:
+        return ("R" in colors, "G" in colors, "U" in colors, "W" in colors, "B" in colors, "N" in colors)
     
-    # put some of these into dao   
-    db = firestore.client()
-    
-    start = datetime.fromisoformat(start)
-    end = datetime.fromisoformat(end)
-    db = firestore.client()
-       
-    
-    redQ = (db.collection("cards")
-             .where(filter=FieldFilter("released", ">", start))
-             .where(filter=FieldFilter("released", "<", end))
-             .where(filter=FieldFilter("red", "==", True))
-             .where(filter=_get_cost_filters(min_cost, max_cost))
-            )
-    
-    blueQ = (db.collection("cards")
-             .where(filter=FieldFilter("released", ">", start))
-             .where(filter=FieldFilter("released", "<", end))
-             .where(filter=FieldFilter("blue", "==", True))
-             .where(filter=_get_cost_filters(min_cost, max_cost))
-            )
-    
-    blackQ = (db.collection("cards")
-             .where(filter=FieldFilter("released", ">", start))
-             .where(filter=FieldFilter("released", "<", end))
-             .where(filter=FieldFilter("black", "==", True))
-             .where(filter=_get_cost_filters(min_cost, max_cost))
-            )
-    
-    greenQ = (db.collection("cards")
-             .where(filter=FieldFilter("released", ">", start))
-             .where(filter=FieldFilter("released", "<", end))
-             .where(filter=FieldFilter("green", "==", True))
-             .where(filter=_get_cost_filters(min_cost, max_cost))
-            )
-    
-    whiteQ = (db.collection("cards")
-             .where(filter=FieldFilter("released", ">", start))
-             .where(filter=FieldFilter("released", "<", end))
-             .where(filter=FieldFilter("white", "==", True))
-             .where(filter=_get_cost_filters(min_cost, max_cost))
-            )
-    
-    colorlessQ = (db.collection("cards")
-             .where(filter=FieldFilter("released", ">", start))
-             .where(filter=FieldFilter("released", "<", end))
-             .where(filter=FieldFilter("colorless", "==", True))
-             .where(filter=_get_cost_filters(min_cost, max_cost))
-            )
-     
-    start = time.time()
-    redC = aggregation.AggregationQuery(redQ).count().get()
-    blueC = aggregation.AggregationQuery(blueQ).count().get()
-    blackC = aggregation.AggregationQuery(blackQ).count().get()
-    greenC = aggregation.AggregationQuery(greenQ).count().get()
-    whiteC = aggregation.AggregationQuery(whiteQ).count().get()
-    colorlessC = aggregation.AggregationQuery(colorlessQ).count().get()
-    
-    redT = redC[0][0].value
-    blueT = blueC[0][0].value
-    blackT = blackC[0][0].value
-    greenT = greenC[0][0].value
-    whiteT = whiteC[0][0].value
-    colorlessT = colorlessC[0][0].value
-    
-    values = [redT, blueT, blackT, greenT, whiteT, colorlessT]
-    average = statistics.mean(values)
-    mode = statistics.mode(values)
-    median = statistics.median(values)
-    took = time.time() - start
-    print("took: ", took)
-    # need to get keys too, lol.
-    print(average, mode, median)
-    return str({"median": median, "mode": mode, "average": average})
+def _get_type_booleans(types):
+    if "A" in types:
+        return (True, True, True, True, True, True)
+    else:
+        return ("L" in types, "C" in types, "S" in types, "I" in types, "E" in types, "A" in types)
 
 def _get_cost_filters(min, max):
     filters = []
@@ -89,9 +24,74 @@ def _get_cost_filters(min, max):
         filters.append(FieldFilter("cmc", "==", cost))
     return Or(filters=filters)
 
-def get_card_type_measures(start, end, color, cost):
+def get_color_measures(dao, start, end, cardtype, min_cost = 1, max_cost = 16):
+    start = datetime.fromisoformat(start)
+    end = datetime.fromisoformat(end)
+    db = firestore.client()
+    
+    cost_filters = _get_cost_filters(min_cost, max_cost)
+    land, creature, sorcery, instant, enchantment, artifact = _get_type_booleans(cardtype)
+        
+    starttime = time.time()
+    results = {}
+    for color in ["red", "green", "blue", "black", "white", "colorless"]:
+        query = (db.collection("cards")
+                .where(filter=FieldFilter("released", ">", start))
+                .where(filter=FieldFilter("released", "<", end))
+                .where(filter=FieldFilter(color, "==", True))
+                .where(filter=FieldFilter("Land", "==", land))
+                .where(filter=FieldFilter("Creature", "==", creature))
+                .where(filter=FieldFilter("Artifact", "==", sorcery))
+                .where(filter=FieldFilter("Enchantment", "==", sorcery))
+                .where(filter=FieldFilter("Instant", "==", instant))
+                .where(filter=FieldFilter("Sorcery", "==", sorcery))
+                .where(filter=cost_filters)
+            )
+        retval = aggregation.AggregationQuery(query).count().get()
+        results[color] = retval[0][0].value
+    
+    print("took: ", time.time() - starttime)
+    
+    
+    # values = [redT, blueT, blackT, greenT, whiteT, colorlessT]
+    # average = statistics.mean(values)
+    # mode = statistics.mode(values)
+    # median = statistics.median(values)
+    # took = time.time() - start
+    # print("took: ", took)
+    # # need to get keys too, lol.
+    # print(average, mode, median)
+    # return str({"median": median, "mode": mode, "average": average})
+
+def get_card_type_measures(start, end, colors = "A", min_cost = 1, max_cost = 20):
     # get cards within_range & cost = ? & get(color) == True (colors are seperated currently?)
-    pass
+    
+    start = datetime.fromisoformat(start)
+    end = datetime.fromisoformat(end)
+    
+    red, green, blue, white, black, colorless = _get_color_booleans(colors)
+    cost_filters = _get_cost_filters(min_cost, max_cost)
+
+    start = time.time()
+    db = firestore.client()
+    results = {}
+    for card_type in ["Land", "Creature", "Sorcery", "Instant", "Enchantment", "Artifact"]:
+        query = (db.collection("cards")
+                .where(filter=FieldFilter("released", ">", start))
+                .where(filter=FieldFilter("released", "<", end))
+                .where(filter=FieldFilter(card_type, "==", True))
+                .where(filter=FieldFilter("Red", "==", red))
+                .where(filter=FieldFilter("Blue", "==", blue))
+                .where(filter=FieldFilter("Green", "==", green))
+                .where(filter=FieldFilter("Black", "==", black))
+                .where(filter=FieldFilter("White", "==", white))
+                .where(filter=FieldFilter("Colorless", "==", colorless))
+                .where(filter=cost_filters))
+        retval = aggregation.AggregationQuery(query).count().get()
+        results[card_type] = retval[0][0].value
+    print("took: ", time.time() - start)
+    return results
+    
 
 def get_cost_measures(start, end, color, type):
     pass

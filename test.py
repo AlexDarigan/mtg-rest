@@ -10,7 +10,14 @@ measures.get_color_measures(
     end="20231111", 
     min_cost=0,
     max_cost=16,
-    cardtype="any")
+    cardtype="A")
+
+measures.get_card_type_measures( 
+    start="19940101", 
+    end="20231111", 
+    min_cost=0,
+    max_cost=16,
+    colors="A")
 
 # # Create a reference to the cities collection
 # cities_ref = db.collection("cities")

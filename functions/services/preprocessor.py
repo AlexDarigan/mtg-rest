@@ -30,17 +30,30 @@ def transform(data):
     df["usd_foil"] = pd.to_numeric(df["prices.usd_foil"], errors='coerce').fillna(0.0)
     df["eur"] = pd.to_numeric(df["prices.eur"], errors='coerce').fillna(0.0)
     df["eur_foil"] = pd.to_numeric(df["prices.eur_foil"], errors='coerce').fillna(0.0)
+    
+    # type line
+    df["types"] = df["type_line"].str.split(" ")
+    
+    # Basic Card Types
+    df["Land"] = df["types"].apply(lambda x: type(x) is list and "Land" in x)
+    df["Creature"] = df["types"].apply(lambda x: type(x) is list and "Creature" in x)
+    df["Artifact"] = df["types"].apply(lambda x: type(x) is list and "Artifact" in x)
+    df["Instant"] = df["types"].apply(lambda x: type(x) is list and "Instant" in x)
+    df["Sorcery"] = df["types"].apply(lambda x: type(x) is list and "Sorcery" in x)
+    df["Enchantment"] = df["types"].apply(lambda x: type(x) is list and "Enchantment" in x)
+
 
     # Dropping Double-Faced Cards
     filter = df.name.apply(lambda x: "//" not in x)
     df = df[filter]
 
     # Selecting only necessary columns
-    df = pd.DataFrame(data=df, columns=["id", "name", "released", "uri", "mana_cost", "cmc", "type_line", "oracle_text",
+    df = pd.DataFrame(data=df, columns=["id", "name", "released", "uri", "mana_cost", "cmc", "colors", "type_line", "oracle_text",
                                             "power", "toughness", "red", "green", "blue", "white", "black", "colorless", "keywords",
                                             "standard", "modern", "vintage", "legacy", "reserved", "foil", "nonfoil",
                                             "promo", "reprint", "variation", "set_id", "rarity", "full_art",
-                                            "usd", "usd_foil", "eur", "eur_foil"])
+                                            "usd", "usd_foil", "eur", "eur_foil", "types", 
+                                            "Land", "Enchantment", "Sorcery", "Instant", "Artifact", "Creature"])
 
     cards = df.to_dict(orient="records")
     year, month, day = str(datetime.now().date()).split("-")
