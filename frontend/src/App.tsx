@@ -7,6 +7,7 @@ import './App.css'
 function App() {
   const [count, setCount] = useState(0)
   const [text, setText] = useState("")
+  const [img, setImg] = useState("https://image.smythstoys.com/original/desktop/171511074_7.jpg")
 
   // Callback Reference
   const fetcher = useCallback(async () => {
@@ -24,6 +25,15 @@ function App() {
     console.log(data)
   }, [])
 
+  const trends = useCallback(async () => {
+    // Error was using no cors && also bad url (check for bad plurals, wrong-order)
+    var response = await fetch("https://mtg-rest.web.app/api/v1/price/trends?name=Archivist")
+    console.log(response)
+    var data = await response.json()
+    setImg(data[0]["img"])
+    console.log(data)
+  }, [])
+
   return (
     <>
       <div>
@@ -35,12 +45,15 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      <img src="https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350"/>
+      <img src={img} style={{border: "2px black solid"}}/>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
         <button onClick={() => fetcher()}>Text is {text}</button>
         <button onClick={() => fetcher2()}>App {text}</button>
+        <button onClick={() => trends()}>Get Trends</button>
         <Plot
         data={[
           {
