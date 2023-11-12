@@ -2,6 +2,12 @@ from datetime import datetime
 import pandas as pd
 from firebase_admin import firestore
 
+def add_colorless_to_colors(x):
+  # Adding identifier for colorless cards to help exploring later
+  if type(x) is list and len(x) == 0:
+    return ["N"]
+  return x
+
 def transform(data):
     df = pd.json_normalize(data)
 
@@ -18,6 +24,8 @@ def transform(data):
     df["white"] = df["colors"].apply(lambda x: type(x) is list and "W" in x)
     df["black"] = df["colors"].apply(lambda x: type(x) is list and "B" in x)
     df["colorless"] = df["colors"].apply(lambda x: type(x) is list and len(x) == 0)
+    df["colors"] = df["colors"].to_list()
+    df["colors"] = df["colors"].apply(add_colorless_to_colors)
 
     # Legalities
     df["standard"] = df["legalities.standard"] == "legal"

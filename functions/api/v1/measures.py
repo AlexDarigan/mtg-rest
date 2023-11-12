@@ -5,40 +5,26 @@ from google.cloud.firestore_v1.base_query import FieldFilter, And, Or
 import time
 import statistics
 
-def _get_color_filters(colors):
-    filters = []
-    for color in colors:
-        match color:
-            case "R": filters.append(FieldFilter("red", "==", True))
-            case "G": filters.append(FieldFilter("green", "==", True))
-            case "U": filters.append(FieldFilter("blue", "==", True))
-            case "W": filters.append(FieldFilter("white", "==", True))
-            case "B": filters.append(FieldFilter("black", "==", True))
-            case "N": filters.append(FieldFilter("colorless", "==", True))
-            case "A": 
-                for color in ["red", "green", "blue", "white", "black", "colorless"]:
-                    filters.append(FieldFilter(color, "==", True))
-    return Or(filters=filters)
-    
+
 def _get_card_type_filters(cardtypes):
-    filters = []
+    types = []
     for card_key in cardtypes:
         match card_key:
-            case "C": filters.append(FieldFilter("Creature", "==", True))
-            case "A": filters.append(FieldFilter("Artifact", "==", True))
-            case "E": filters.append(FieldFilter("Enchantment", "==", True))
-            case "I": filters.append(FieldFilter("Instant", "==", True))
-            case "S": filters.append(FieldFilter("Sorcery", "==", True))
-            case "L": filters.append(FieldFilter("Land", "==", True))
+            case "C": types.append("Creature")
+            case "A": types.append("Artifact")
+            case "E": types.append("Enchantment")
+            case "I": types.append("Instant")
+            case "S": types.append("Sorcery")
+            case "L": types.append("Land")
             case "A": 
                 for card_type in ["Land", "Creature", "Artifact", "Enchantment", "Sorcery"]:
-                    filters.append(FieldFilter(card_type, "==", True))
-    return Or(filters=filters)
+                    types.append(card_type)
+    return types
 
 def get_color_measures(start, end, cardtypes):
     db = firestore.client()
     
-    type_filter = _get_card_type_filters(cardtypes=cardtypes)
+    types = _get_card_type_filters(cardtypes=cardtypes)
         
     begin = time.time()
     results = {}
@@ -47,7 +33,7 @@ def get_color_measures(start, end, cardtypes):
                 .where(filter=FieldFilter("released", ">", start))
                 .where(filter=FieldFilter("released", "<", end))
                 .where(filter=FieldFilter(color, "==", True))
-                .where(filter=type_filter)
+                .where(filter=FieldFilter("types", "array_contains_any", types))
             )
         results[color] = aggregation.AggregationQuery(query).count().get()[0][0].value
 
@@ -84,7 +70,7 @@ def get_color_measures(start, end, cardtypes):
 def get_card_type_measures(start, end, colors):
     db = firestore.client()
 
-    color_filters = _get_color_filters(colors)
+    colors_filters = [*colors] # Splitting colors into list
     
     begin = time.time()
     results = {}
@@ -93,7 +79,7 @@ def get_card_type_measures(start, end, colors):
                 .where(filter=FieldFilter("released", ">", start))
                 .where(filter=FieldFilter("released", "<", end))
                 .where(filter=FieldFilter(card_type, "==", True))
-                .where(filter=color_filters)
+                .where(filter=FieldFilter("colors", "array_contains_any", colors_filters))
         )
         results[card_type] = aggregation.AggregationQuery(query).count().get()[0][0].value
 
