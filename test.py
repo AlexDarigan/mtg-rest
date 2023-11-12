@@ -1,16 +1,16 @@
 from functions.services import dao
-from functions.api.v1 import measures
+from functions.api.v1 import measures, trends
 from firebase_admin import initialize_app
 from datetime import datetime
 import json 
 
 app = initialize_app(options={"projectId": "mtg-rest"})
-
-r = measures.get_color_measures(
-    start=datetime.fromisoformat("19930805"), 
-    end=datetime.fromisoformat("20231112"), 
-    cardtypes="A")
-print(json.dumps(r).encode("utf8"))
+print(trends.get_price_trend(cardname="Black Lotus"))
+# r = measures.get_color_measures(
+#     start=datetime.fromisoformat("19930805"), 
+#     end=datetime.fromisoformat("20231112"), 
+#     cardtypes="A")
+# print(json.dumps(r).encode("utf8"))
 
 # x = measures.get_card_type_measures( 
 #     start=datetime.fromisoformat("19940101"), 

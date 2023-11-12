@@ -49,7 +49,7 @@ def transform(data):
     df["Instant"] = df["types"].apply(lambda x: type(x) is list and "Instant" in x)
     df["Sorcery"] = df["types"].apply(lambda x: type(x) is list and "Sorcery" in x)
     df["Enchantment"] = df["types"].apply(lambda x: type(x) is list and "Enchantment" in x)
-
+    df["image"] = df["image_uris.png"]
 
     # Dropping Double-Faced Cards
     filter = df.name.apply(lambda x: "//" not in x)
@@ -60,7 +60,7 @@ def transform(data):
                                             "power", "toughness", "red", "green", "blue", "white", "black", "colorless", "keywords",
                                             "standard", "modern", "vintage", "legacy", "reserved", "foil", "nonfoil",
                                             "promo", "reprint", "variation", "set_id", "rarity", "full_art",
-                                            "usd", "usd_foil", "eur", "eur_foil", "types", 
+                                            "usd", "usd_foil", "eur", "eur_foil", "types", "set_name", "image", 
                                             "Land", "Enchantment", "Sorcery", "Instant", "Artifact", "Creature"])
 
     cards = df.to_dict(orient="records")

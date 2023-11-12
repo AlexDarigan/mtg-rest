@@ -30,9 +30,11 @@ def get_card_type_measures(request):
     return json.dumps(result).encode("utf8")
     
 # # Price Trends
-# @https_fn.on_request()
-# def get_price_trend(request):
-#     return "Trends not implemented"
+@https_fn.on_request()
+def get_price_trend(request):
+     cardname = request.args.get("name")
+     result = trends.get_price_trend(cardname)
+     return json.dumps(result).encode("utf8")
 
 # Scheduled Function for data processing
 @scheduler_fn.on_schedule(schedule="0 3 * * *")
