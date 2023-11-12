@@ -5,6 +5,24 @@ from google.cloud.firestore_v1.base_query import FieldFilter, And, Or
 import time
 import statistics
 
+def calculate(results, reverseIndex):
+    values = list(results.values())
+    mode = statistics.mode(values)
+    median = (sorted(values)[len(values) // 2])
+    average = statistics.mean(values)
+    maximum = max(values)
+    minimum = min(values)
+    total = sum(values)
+
+    return {
+        "min": reverseIndex[minimum],
+        "max": reverseIndex[maximum],
+        "mode": reverseIndex[mode],
+        "median": reverseIndex[median],
+        "average": average,
+        "values": results,
+        "total": total
+    }
 
 def _get_card_type_filters(cardtypes):
     types = []
@@ -49,28 +67,17 @@ def get_color_measures(start, end, cardtypes):
         results["colorless"]: "colorless",
     }
     
-    values = list(results.values())
-    mode = statistics.mode(values)
-    median = statistics.median(values + [0])
-    average = statistics.mean(values)
-    maximum = max(values)
-    minimum = max(values)
-    total = sum(values)
-
-    return {
-        "min": reverseIndex[minimum],
-        "max": reverseIndex[maximum],
-        "mode": reverseIndex[mode],
-        "median": reverseIndex[median],
-        "average": average,
-        "values": results,
-        "total": total
-    }
+    return calculate(results, reverseIndex)
     
 def get_card_type_measures(start, end, colors):
     db = firestore.client()
 
-    colors_filters = [*colors] # Splitting colors into list
+    colors_filters = []
+    if colors == "A":
+        colors_filters = ["R", "G", "B", "U", "W", "N"]
+    else:
+        colors_filters = [*colors]
+    print(colors_filters)
     
     begin = time.time()
     results = {}
@@ -93,20 +100,5 @@ def get_card_type_measures(start, end, colors):
         results["Artifact"]: "Artifact",
     }
     
-    values = list(results.values())
-    mode = statistics.mode(values)
-    median = statistics.median(values + [0])
-    average = statistics.mean(values)
-    maximum = max(values)
-    minimum = max(values)
-    total = sum(values)
-
-    return {
-        "min": reverseIndex[minimum],
-        "max": reverseIndex[maximum],
-        "mode": reverseIndex[mode],
-        "median": reverseIndex[median],
-        "average": average,
-        "values": results,
-        "total": total
-    }
+    return calculate(results, reverseIndex)
+    
