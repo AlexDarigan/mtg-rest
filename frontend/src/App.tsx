@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import Plot from 'react-plotly.js';
 import './App.css'
 
 function App() {
@@ -40,6 +41,19 @@ function App() {
         </button>
         <button onClick={() => fetcher()}>Text is {text}</button>
         <button onClick={() => fetcher2()}>App {text}</button>
+        <Plot
+        data={[
+          {
+            x: [1, 2, 3],
+            y: [2, 6, 3],
+            type: 'scatter',
+            mode: 'lines+markers',
+            marker: {color: 'red'},
+          },
+          {type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
+        ]}
+        layout={ {width: 320, height: 240, title: 'A Fancy Plot'} }
+      />
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
