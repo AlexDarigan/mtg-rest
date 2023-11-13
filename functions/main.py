@@ -32,9 +32,9 @@ def get_card_type_measures(request):
 # v1/price/trends?=name
 @https_fn.on_request()
 def get_price_trends(request):
-     cardname = request.args.get("name")
-     result = trends.get_price_trend(cardname)
-     return json.dumps(result)
+    cardname = request.args.get("name")
+    result = trends.get_price_trend(cardname)
+    return json.dumps(result)
 
 # Scheduled Function for data processing
 @scheduler_fn.on_schedule(schedule="0 3 * * *")

@@ -27,7 +27,7 @@ function App() {
 
   const trends = useCallback(async () => {
     // Error was using no cors && also bad url (check for bad plurals, wrong-order)
-    console.log(window.location.host)
+    // use path/?var=value for queries and not path?var=value
     var response = await fetch("/api/v1/price/trends?name=Archivist")
     console.log(response)
     var data = await response.json()
