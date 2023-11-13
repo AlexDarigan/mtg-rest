@@ -16,7 +16,7 @@
     "rewrites": [
       {"source": "/api/v1/measure/color", "function": "get_color_measures" },
       {"source": "/api/v1/measure/cardtypes", "function": "get_card_type_measures"},
-      {"source": "/api/v1/price/trends", "function": "get_price_trends"}
+      {"source": "/api/v1/trend", "function": "get_price_trend"}
     ],
     "ignore": [
       "firebase.json",
@@ -26,5 +26,20 @@
     "frameworksBackend": {
       "region": "us-central1"
     }
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
   }
 }
