@@ -1,4 +1,4 @@
-import { FaGithub, FaLinkedin, FaMailchimp} from 'react-icons/fa'
+import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa'
 import { IconContext } from 'react-icons'
 import { Outlet } from 'react-router-dom';
 
@@ -24,10 +24,10 @@ function Root() {
           <a href="https://www.github.com/AlexDarigan/mtg-rest"><FaGithub/></a>
         </li>
         <li>
-          <a href="/linkedin"><FaLinkedin/></a>
+          <a href="https://www.linkedin.com/in/daviddarigan/"><FaLinkedin/></a>
         </li>
         <li>
-          <a href="/email"><FaMailchimp/></a>
+          <a href="mailto:C00263218@setu.ie"><FaEnvelope/></a>
         </li>
         </IconContext.Provider>
       </ul>
