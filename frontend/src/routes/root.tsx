@@ -10,7 +10,7 @@ import 'rsuite/dist/rsuite.min.css';
 function HeaderContent() {
   return (
       <Navbar>
-        <Navbar.Brand><center>Data Science & Machine Learning Portfolio</center></Navbar.Brand>
+        <Navbar.Brand><center style={{fontSize: "1rem"}}>Data Science & Machine Learning Portfolio</center></Navbar.Brand>
         <Nav pullRight>
         <IconContext.Provider value={{ className: "shared-class", size: "42" }}>
         <Nav.Item icon={<FaGithub/>}></Nav.Item>
@@ -36,7 +36,7 @@ return (
 function ProjectMenu() {
   return ( 
     <Nav.Menu eventKey="2" title="Projects">
-      <Nav.Item eventKey='2-1'>Introduction / Mission Statement</Nav.Item>
+      <Nav.Item eventKey='2-1'><Link to="/dsml">Introduction / Mission Statement</Link></Nav.Item>
       <Nav.Item eventKey='2-2'>REST Project Design</Nav.Item>
       <Nav.Item eventKey='2-3'>Data Sourcing</Nav.Item>
       <Nav.Item eventKey='2-4'>Data Preprocessing</Nav.Item>
