@@ -2,6 +2,7 @@ import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa'
 import { IconContext } from 'react-icons'
 import { Outlet } from 'react-router-dom';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { Link } from 'react-router-dom';
 
 
 function Root() {
@@ -29,7 +30,7 @@ function Root() {
     <Sidebar>
     <Menu>
     <SubMenu label="About Me">
-      <MenuItem>About Me</MenuItem>
+      <MenuItem><Link to={"portfolio"}>About Me</Link></MenuItem>
       <MenuItem>Experience</MenuItem>
       <MenuItem>Education</MenuItem>
       <MenuItem>Technologies</MenuItem>
