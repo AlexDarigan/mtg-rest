@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
-
+import { FaGithub, FaLinkedin, FaMailchimp} from 'react-icons/fa'
+import { IconContext } from 'react-icons'
 
 function NavBar() {
   return (
@@ -7,14 +8,27 @@ function NavBar() {
       <a href="" className="site-title">Site Name</a>
       <ul>
         <li>
-          <a href="/github">Github</a>
+          <a href="Portfolio">About Me</a>
         </li>
         <li>
-          <a href="/linkedin"></a>
+          <a href="Portfolio">M:TG Rest API</a>
         </li>
         <li>
-          <a href="/email"></a>
+          <a href="Portfolio">DSML</a>
         </li>
+      </ul>
+      <ul>
+        <IconContext.Provider value={{ className: "shared-class", size: "42" }}>
+        <li>
+          <a href="https://www.github.com/AlexDarigan/mtg-rest"><FaGithub/></a>
+        </li>
+        <li>
+          <a href="/linkedin"><FaLinkedin/></a>
+        </li>
+        <li>
+          <a href="/email"><FaMailchimp/></a>
+        </li>
+        </IconContext.Provider>
       </ul>
     </nav>
   )
