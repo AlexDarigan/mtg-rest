@@ -1,6 +1,8 @@
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa'
 import { IconContext } from 'react-icons'
 import { Outlet } from 'react-router-dom';
+import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+
 
 function Root() {
   return (
@@ -35,6 +37,31 @@ function Root() {
     <div id="detail">
       <Outlet />
     </div>
+    <Sidebar>
+    <Menu>
+    <SubMenu label="About Me">
+      <MenuItem>About Me</MenuItem>
+      <MenuItem>Experience</MenuItem>
+      <MenuItem>Education</MenuItem>
+      <MenuItem>Technologies</MenuItem>
+    </SubMenu>
+    <SubMenu label="Projects">
+      <MenuItem>Introduction / Mission Statement</MenuItem>
+      <MenuItem>REST Project Design</MenuItem>
+      <MenuItem>Data Sourcing</MenuItem>
+      <MenuItem>Data Preprocessing</MenuItem>
+      <MenuItem>Example Charts</MenuItem>
+      <MenuItem>Code</MenuItem>
+      <MenuItem>Oppurtunities</MenuItem>
+      <MenuItem>Challenges</MenuItem>
+    </SubMenu>
+    <SubMenu label="REST API">
+      <MenuItem>REST Structure</MenuItem>
+      <MenuItem>Measures</MenuItem>
+      <MenuItem>Price</MenuItem>
+    </SubMenu>
+  </Menu>
+    </Sidebar>
     </>
   );
 }
