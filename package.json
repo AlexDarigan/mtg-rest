@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/react": "^18.2.37",
     "react-plotly": "^1.0.0"
   }
 }

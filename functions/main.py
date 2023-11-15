@@ -5,6 +5,7 @@ from api.v1 import measures, trends
 from concurrent.futures import wait
 from datetime import datetime
 import json
+from google.cloud import bigquery
 
 # Initialization
 options.set_global_options(max_instances=1, memory=options.MemoryOption.GB_4, cpu=2, timeout_sec=540)
@@ -52,3 +53,19 @@ def on_cards_published(event):
     dao.add_card_batch(data["chunk"])
     dao.end_run_chunk(chunk)
 
+
+@scheduler_fn.on_schedule(schedule="0 3 * * *")
+def add_data(event):
+    client = bigquery.Client()
+
+    queryA = "INSERT INTO testset.x(name, age) VALUES('Jeff', 32)"
+    queryB = "SELECT name FROM testset.x"
+    
+    a_job = client.query(queryA)
+    b_job = client.query(queryB)
+
+    result = a_job.result()
+    resultb = b_job.result()
+
+    for row in resultb:
+        print(row)
