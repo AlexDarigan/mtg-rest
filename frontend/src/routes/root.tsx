@@ -1,70 +1,90 @@
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa'
 import { IconContext } from 'react-icons'
 import { Outlet } from 'react-router-dom';
-import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { Container, Header, Content, Footer, Sidebar, Navbar, Nav } from 'rsuite';
+import Sidenav from 'rsuite/Sidenav';
 import { Link } from 'react-router-dom';
-import { Container, Header, Content, Footer, Sidebar as SideBarContainer } from 'rsuite';
 import 'rsuite/dist/rsuite.min.css';
+
+
+function HeaderContent() {
+  return (
+      <Navbar>
+        <Navbar.Brand><center>Data Science & Machine Learning Portfolio</center></Navbar.Brand>
+        <Nav pullRight>
+        <IconContext.Provider value={{ className: "shared-class", size: "42" }}>
+        <Nav.Item icon={<FaGithub/>}></Nav.Item>
+        <Nav.Item icon={<FaLinkedin/>}></Nav.Item>
+        <Nav.Item icon={<FaEnvelope/>}></Nav.Item>
+        </IconContext.Provider>
+      </Nav>
+      </Navbar>
+  );
+}
+
+function AboutMeMenu() {
+return (
+    <Nav.Menu eventKey="1" title="About Me">
+    <Nav.Item eventKey="1-1"><Link to="portfolio">About Me</Link></Nav.Item>
+    <Nav.Item eventKey="1-1">Experience</Nav.Item>
+    <Nav.Item eventKey="1-1">Education</Nav.Item>
+    <Nav.Item eventKey="1-1">Technologies</Nav.Item>
+  </Nav.Menu>
+  );
+}
+
+function ProjectMenu() {
+  return ( 
+    <Nav.Menu eventKey="2" title="Projects">
+      <Nav.Item eventKey='2-1'>Introduction / Mission Statement</Nav.Item>
+      <Nav.Item eventKey='2-2'>REST Project Design</Nav.Item>
+      <Nav.Item eventKey='2-3'>Data Sourcing</Nav.Item>
+      <Nav.Item eventKey='2-4'>Data Preprocessing</Nav.Item>
+      <Nav.Item eventKey='2-5'>Example Charts</Nav.Item>
+      <Nav.Item eventKey='2-6'>Code</Nav.Item>
+      <Nav.Item eventKey='2-7'>Oppurtunities</Nav.Item>
+      <Nav.Item eventKey='2-8'>Challenges</Nav.Item>
+    </Nav.Menu>
+  );
+}
+
+function APIMenu() {
+return (
+  <Nav.Menu eventKey="3" title="MTG Rest API">
+    <Nav.Item eventKey="3-1">Project Structure</Nav.Item>
+    <Nav.Item eventKey="3-2">Measure</Nav.Item>
+    <Nav.Item eventKey="3-3">Price/Trends</Nav.Item>
+    <Nav.Item eventKey="3-3">Price/Predictions</Nav.Item>
+  </Nav.Menu>
+  );
+}
+
+function SidebarContent() {
+  return (
+      <Sidenav defaultOpenKeys={['3', '4']}>
+        <Sidenav.Body>
+          <Nav activeKey="1">
+            
+            <AboutMeMenu/>
+            <ProjectMenu/>
+            <APIMenu/>
+          </Nav>
+        </Sidenav.Body>
+      </Sidenav>    
+    );
+}
 
 function Root() {
   return (
-  <Container>
     <Container>
-    <Header>
-      <nav className='nav'>
-      <a href="" className="site-title">Data Science & Machine Learning Portfolio</a>
-      <ul>
-        <IconContext.Provider value={{ className: "shared-class", size: "42" }}>
-        <li>
-          <a href="https://www.github.com/AlexDarigan/mtg-rest"><FaGithub/></a>
-        </li>
-        <li>
-          <a href="https://www.linkedin.com/in/daviddarigan/"><FaLinkedin/></a>
-        </li>
-        <li>
-          <a href="mailto:C00263218@setu.ie"><FaEnvelope/></a>
-        </li>
-        </IconContext.Provider>
-      </ul>
-    </nav>
-    </Header>
-    </Container>
-    <Container>
-    <SideBarContainer>  
-      <Sidebar style={{height: "100vh"}}>
-      <Menu>
-        <SubMenu label="About Me">
-          <MenuItem><Link to={"portfolio"}>About Me</Link></MenuItem>
-          <MenuItem>Experience</MenuItem>
-          <MenuItem>Education</MenuItem>
-          <MenuItem>Technologies</MenuItem>
-        </SubMenu>
-        <SubMenu label="Projects">
-          <MenuItem>Introduction / Mission Statement</MenuItem>
-          <MenuItem>REST Project Design</MenuItem>
-          <MenuItem>Data Sourcing</MenuItem>
-          <MenuItem>Data Preprocessing</MenuItem>
-          <MenuItem>Example Charts</MenuItem>
-          <MenuItem>Code</MenuItem>
-          <MenuItem>Oppurtunities</MenuItem>
-          <MenuItem>Challenges</MenuItem>
-        </SubMenu>
-        <SubMenu label="REST API">
-          <MenuItem>REST Structure</MenuItem>
-          <MenuItem>Measures</MenuItem>
-          <MenuItem>Price</MenuItem>
-        </SubMenu>
-      </Menu>
-      </Sidebar>
-    </SideBarContainer>
-      <Content>
-      <div id="detail" style={{border: "2px blue solid", backgroundColor: "red", width: "100px", height: "100px"}}>
-        <Outlet />
-      </div>
-      </Content>
+      <Container>
+        <Header>
+          <HeaderContent/>
+        </Header>
       </Container>
       <Container>
-      <Footer>Footer</Footer>
+        <Sidebar style={{height: "100vh"}}><SidebarContent/></Sidebar>
+        <Content id="detail"><Outlet/></Content>
       </Container>
     </Container>
   );
