@@ -8,6 +8,8 @@ body {
 
 .site-title {
     font-size: 2rem;
+    margin: auto;
+    padding: auto;
 }
 
 .nav {

@@ -8,18 +8,7 @@ function Root() {
   return (
     <>
     <nav className='nav'>
-      <a href="" className="site-title">Site Name</a>
-      <ul>
-        <li>
-          <a href="Portfolio">About Me</a>
-        </li>
-        <li>
-          <a href="mtgrest">M:TG Rest API</a>
-        </li>
-        <li>
-          <a href="dsml">DSMLX</a>
-        </li>
-      </ul>
+      <a href="" className="site-title">Data Science & Machine Learning Portfolio</a>
       <ul>
         <IconContext.Provider value={{ className: "shared-class", size: "42" }}>
         <li>
