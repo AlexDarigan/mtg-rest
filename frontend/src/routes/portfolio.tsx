@@ -1,21 +1,12 @@
-import { Panel, Placeholder, PanelGroup, Row, Col } from 'rsuite';
+import { Panel, PanelGroup, Row, Col } from 'rsuite';
 import Me from "../assets/me.jpeg"
-
-
-function Card(props: any) {
-  return (
-    <Panel {...props} bordered header="Card title">
-      <Placeholder.Paragraph />
-    </Panel>);
-}
-
 
 function Portfolio() {
 
   return (
     <>
     <PanelGroup bordered>
-      <Panel header="About Me - David Darigan">
+      <Panel header={<h3>About Me - David Darigan</h3>} style={{fontSize: "1rem"}}>
         <Row>
           <Col  xs={4}><img src={Me} height={200}></img></Col>
           <Col xs={12}>
@@ -31,15 +22,40 @@ function Portfolio() {
           </Col>
         </Row>
       </Panel>
-      <Panel header="Experience">
+      
+      <Panel header={<h3>Experience</h3>} style={{fontSize: "1rem"}}>
+        <PanelGroup>
+        <Panel header="DELL Technologies Undergraduate Internship March 2023 - August 2023">
+          <ul>
+          <li>Contributed to the efforts of the Finance Integration Services Team to support over 150 class 1 financial microservices.</li>
+          <li>Used PowerShell to reduce 2 days of work a year to 30 minutes by automating the task of restaging all applications in each non-production environment.</li>
+          <li>Raised CI / CD Maturity KPI by 12% to reach a total of 76.8% in May from 64.8% in April by applying a number of adjustments to several applications to make them compliant with CI / CD metrics of success. 87.8% was the final score reached as of the end of my internship.</li>
+          <li>Reduced over several thousand application vulnerabilities through proper dependency management of each application.</li>
+          <li>Applied abstraction enhancements to several applications in order to reduce duplicated code and global variables.</li>
+          <li>Utilized GitLab & Spring Configuration Server REST APIs in order to write a feature in Bash to set metadata on applications during the deploy task of the deployment pipeline.</li>
+          </ul>
+        </Panel>
+        <Panel header="Google Developers Student Club Team Lead 2022 - Present">
+          <ul>
+            <li>Co-ordinate weekly events</li>
+            <li>Communicate fundamental technological ideas to members through presentations</li>
+            <li>Manage budgeting with the aid of Google Developer Student Club co-ordinators</li>
+          </ul>
+      </Panel>
+      <Panel header="Google Developers Student Club Core Team Member 2021 - 2022" >
+        <ul>
+          <li>Create applications in order to demonstrate a diverse range of technologies used in presentations</li>
+          <li>Assist other core members with the organization of events</li>
+        </ul>
+      </Panel>
+      </PanelGroup>
+      <Panel header={<h3>Education</h3>} style={{fontSize: "1rem"}}>
         
       </Panel>
-      <Panel header="Education">
+      <Panel header={<h3>Technologies</h3>} style={{fontSize: "1rem"}}>
         
       </Panel>
-      <Panel header="Technologies">
-        
-      </Panel>
+    </Panel>
     </PanelGroup>
     </>
   );
