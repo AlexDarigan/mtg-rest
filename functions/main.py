@@ -1,11 +1,10 @@
 from firebase_admin import initialize_app
 from firebase_functions import options, scheduler_fn, https_fn, pubsub_fn
-from services import gatherer, preprocessor, publisher, dao
+from services import gatherer, preprocessor, publisher, dao, bigquerydao, bq_preprocessor
 from api.v1 import measures, trends
 from concurrent.futures import wait
 from datetime import datetime
 import json
-from google.cloud import bigquery
 
 # Initialization
 options.set_global_options(max_instances=1, memory=options.MemoryOption.GB_4, cpu=2, timeout_sec=540)
@@ -55,17 +54,5 @@ def on_cards_published(event):
 
 
 @scheduler_fn.on_schedule(schedule="0 3 * * *")
-def add_data(event):
-    client = bigquery.Client()
-
-    queryA = "INSERT INTO testset.x(name, age) VALUES('Jeff', 32)"
-    queryB = "SELECT name FROM testset.x"
-    
-    a_job = client.query(queryA)
-    b_job = client.query(queryB)
-
-    result = a_job.result()
-    resultb = b_job.result()
-
-    for row in resultb:
-        print(row)
+def update_big_query(event):
+    bigquerydao.update_all(bq_preprocessor.transform(gatherer.fetch_cards("https://api.scryfall.com/bulk-data/default-cards")))
