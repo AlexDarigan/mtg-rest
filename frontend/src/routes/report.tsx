@@ -1,4 +1,4 @@
-import { Panel, PanelGroup, Row, Col } from 'rsuite';
+import { Panel, PanelGroup } from 'rsuite';
 import { Table } from 'rsuite';
 const { Column, HeaderCell, Cell } = Table;
 
@@ -27,7 +27,7 @@ const response_example = JSON.stringify({
     "mean": "blue"
 });
 
-function DSML() {
+function Report() {
   return (
     <>
     <PanelGroup bordered style={{fontSize: "1rem"}}>
@@ -88,4 +88,4 @@ function DSML() {
   );
 }
 
-export default DSML;
+export default Report;

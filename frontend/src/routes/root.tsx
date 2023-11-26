@@ -1,7 +1,7 @@
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa'
 import { IconContext } from 'react-icons'
 import { Outlet } from 'react-router-dom';
-import { Container, Header, Content, Footer, Sidebar, Navbar, Nav } from 'rsuite';
+import { Container, Header, Content, Sidebar, Navbar, Nav } from 'rsuite';
 import Sidenav from 'rsuite/Sidenav';
 import { Link } from 'react-router-dom';
 import 'rsuite/dist/rsuite.min.css';
@@ -22,32 +22,6 @@ function HeaderContent() {
   );
 }
 
-function AboutMeMenu() {
-return (
-    <Nav.Menu eventKey="1" title="About Me">
-    <Nav.Item eventKey="1-1"><Link to="portfolio">About Me</Link></Nav.Item>
-    <Nav.Item eventKey="1-1">Experience</Nav.Item>
-    <Nav.Item eventKey="1-1">Education</Nav.Item>
-    <Nav.Item eventKey="1-1">Technologies</Nav.Item>
-  </Nav.Menu>
-  );
-}
-
-function ProjectMenu() {
-  return ( 
-    <Nav.Menu eventKey="2" title="Projects">
-      <Nav.Item eventKey='2-1'><Link to="/dsml">Introduction / Mission Statement</Link></Nav.Item>
-      <Nav.Item eventKey='2-2'>REST Project Design</Nav.Item>
-      <Nav.Item eventKey='2-3'>Data Sourcing</Nav.Item>
-      <Nav.Item eventKey='2-4'>Data Preprocessing</Nav.Item>
-      <Nav.Item eventKey='2-5'>Example Charts</Nav.Item>
-      <Nav.Item eventKey='2-6'>Code</Nav.Item>
-      <Nav.Item eventKey='2-7'>Oppurtunities</Nav.Item>
-      <Nav.Item eventKey='2-8'>Challenges</Nav.Item>
-    </Nav.Menu>
-  );
-}
-
 function APIMenu() {
 return (
   <Nav.Menu eventKey="3" title="MTG Rest API">
@@ -64,10 +38,9 @@ function SidebarContent() {
       <Sidenav defaultOpenKeys={['3', '4']}>
         <Sidenav.Body>
           <Nav activeKey="1">
-            
-            <AboutMeMenu/>
-            <ProjectMenu/>
-            <APIMenu/>
+          <Nav.Item eventKey="1"><Link to="profile">About Me</Link></Nav.Item>
+          <Nav.Item eventKey="2"><Link to="report">Data Science Report</Link></Nav.Item>
+          <APIMenu/>
           </Nav>
         </Sidenav.Body>
       </Sidenav>    

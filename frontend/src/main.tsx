@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from './routes/root';
-import Portfolio from './routes/portfolio';
-import DSML from './routes/dsml';
+import Profile from './routes/profile';
+import Report from './routes/report';
 import API from './routes/api';
 
 const router = createBrowserRouter([
@@ -11,8 +11,8 @@ const router = createBrowserRouter([
     path: "/",
     element: <Root/>,
     children: [
-      { path: "/portfolio", element: <Portfolio/> },
-      { path: "/dsml", element: <DSML/> },
+      { path: "/profile", element: <Profile/> },
+      { path: "/report", element: <Report/> },
       { path: "/mtgrest", element: <API/>}
     ]
   }

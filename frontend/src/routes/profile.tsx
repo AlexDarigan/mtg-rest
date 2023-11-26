@@ -1,7 +1,7 @@
 import { Panel, PanelGroup, Row, Col } from 'rsuite';
 import Me from "../assets/me.jpeg"
 
-function Portfolio() {
+function Profile() {
 
   return (
     <>
@@ -87,4 +87,4 @@ function Portfolio() {
   );
 }
 
-export default Portfolio;
+export default Profile;
