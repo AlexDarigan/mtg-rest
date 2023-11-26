@@ -2,7 +2,6 @@ import { PanelGroup, Panel, Table } from "rsuite";
 import ColorDistribution from "./api/color_distribution";
 import Cards from "./api/cards";
 import Trends from "./api/trends";
-import Predictions from "./api/predictions";
 const { Column, HeaderCell, Cell } = Table;
 
 const REST: string = "https://en.wikipedia.org/wiki/REST";
@@ -25,7 +24,6 @@ function API() {
       </Panel>
       
       <Panel bordered header={<h3>Rest Project Design</h3>}>
-        <i>You can find more detail on the REST API link in the main menu</i>
         <br></br><br></br>
         The primary navigation area of the project will be on the API Hostname as of the projects 
         version at that time.
@@ -53,7 +51,6 @@ function API() {
         <Cards/>
         <ColorDistribution/>
         <Trends/>
-        <Predictions/>
     </PanelGroup>
     </>
   );

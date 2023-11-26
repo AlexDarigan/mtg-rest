@@ -49,6 +49,8 @@ function ColorDistribution() {
           <Row>
               <b>start:</b>
               The earliest date that cards may have been released (earliest is Jan 1st 2003)
+          </Row>
+          <Row>
               <b>end:</b>
               The most recent date that cards may have been released (most recent is today after 3 UTC)
           </Row>
@@ -59,7 +61,7 @@ function ColorDistribution() {
           <br></br><br></br>
           <h4>Returns</h4>
           <br></br>
-          An key-value pair representing each color and their total count for the specified date range (Red (R), Green (G), Blue (U), Black (B), White (W) & Colorness (N))
+          A key-value pair representing each color and their total count for the specified date range (Red (R), Green (G), Blue (U), Black (B), White (W) & Colorness (N))
         </Row>      
       </Panel>
     );
