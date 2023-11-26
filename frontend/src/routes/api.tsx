@@ -11,23 +11,6 @@ const MTG_FANDOM: string = "https://mtg.fandom.com/wiki/Magic:_The_Gathering";
 const BLACK_LOTUS: string = "https://www.ign.com/articles/magic-the-gatherings-most-sought-after-card-sells-for-record-540000)";
 
 const hostinfo = [{ "host": `mtg-rest.web.app`, "version": 1 }];
-const projinfo = [
-  {"title": "Title", "desc": "The project title"},
-  {"title": "Description", "desc": "A brief description of the project"},
-  {"title": "HTTP Route", "desc": "The HTTP Route of the project"},
-  {"title": "Resources", "desc": "A tabled list of HTTP Resources"},
-  {"title": "Query Parameters", "desc": "A optional tabled set of HTTP query parameters"},
-  {"title": "Technologies", "desc": "The technologies used in the project (e.g python)"},
-  {"title": "Libraries", "desc": "The libraries used in the project (e.g pandas)"},
-  {"title": "Data Sources", "desc": "The data sources used for that project (e.g scryfall[4]"},
-  {"title": "Data Storage", "desc": "How and where our transformed data is stored (e.g CSV, Cloud)"},
-]
-
-const response_example = JSON.stringify({
-    "mode": "green",
-    "median": "red",
-    "mean": "blue"
-});
 
 function API() {
   return (
@@ -37,7 +20,7 @@ function API() {
       A <a href={REST}>REST</a>ful API to serve Magic: The Gathering cards statistics. Magic: The Gathering (M:TG) is a trading card game created in 
       1993 by <a href={MTG_INFO}>Richard  Garfield</a> There are over <a href={MTG_FANDOM}>25,000 cards that exist for M:TG as of 2023</a>A number of 
       these cards are noteworthy for being exceptionally expensive, such as a copy of <a href={BLACK_LOTUS}>Black Lotus” selling for $540,000</a>
-      While Black Lotus is an exceptional case, many M:TG cards fluctuate in price as the context of the game changes. This project is intended to 
+       While Black Lotus is an exceptional case, many M:TG cards fluctuate in price as the context of the game changes. This project is intended to 
       serve statistical data regarding M:TG card attributes and prices.
       </Panel>
       
@@ -75,12 +58,5 @@ function API() {
     </>
   );
 }
-
-
-// Color Distribution
-// Price Trends
-// Price Predictions
-
-// Format
 
 export default API;
