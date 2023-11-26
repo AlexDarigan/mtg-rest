@@ -1,5 +1,7 @@
-import { Table, Panel, Col, Row, Input } from "rsuite"
-import { useState } from 'react';
+import { Table, Panel, Col, Row, Input, Button } from "rsuite"
+import { useState, useCallback } from 'react';
+import { RowDataType } from "rsuite/esm/Table";
+import { forEach } from "lodash";
 const { Column, HeaderCell, Cell } = Table;
 
 // Route
@@ -17,22 +19,43 @@ const c = [{
   "set_name": "Doctor Who"
 }]
 
+// const fetcher = useCallback(async () => {
+//   var response = await fetch("https://run.mocky.io/v3/bb21935b-b670-48f8-bf0f-a50d28328ba2")
+//   var data = await response.json()
+//   setText(JSON.stringify(data))
+// }, [])
+
 function Cards() {
-    const [art, setArt] = useState("https://cards.scryfall.io/png/front/c/8/c84ea0fd-efc7-4614-9f8f-41a3c71fceaa.png?1696636503")
+    const [art, setArt] = useState("https://i.imgur.com/LdOBU1I.jpeg")
     const [text, setText] = useState("")
+    const [cards, setCards] = useState([])
     
+    async function getCard() {
+      var card_name = text
+      setText("")
+      var response = await fetch(`https://mtg-rest.web.app/api/v1/card?name="${card_name}"`)
+      var data = await response.json()
+      setCards(data)
+    }
+
+    function changeCell(rowData: RowDataType) {
+      var card = cards.find((card) => card["id"] == rowData.id)
+      if(card) {
+        setArt(card["image"]);
+      }
+    }
 
     return (
       <Panel header={<h2>Card Getter</h2>} bordered>
         <Row>
           <Col><img src={art} height="320px" width="240px"></img></Col>
           <Col>
-            <CardView/>
+            <CardView cards={cards} changeCell={changeCell}/>
           </Col>
           <Col>
             <Input type="text" placeholder="Enter Card Name" value={text} onChange={setText} style={{border: "2px black solid"}}/>
             <br></br>
-            <Input type="button" value="Request" style={{border: "2px black solid"}}/>
+            <center><Button onClick={getCard}>Request</Button></center>
           </Col>
         </Row>
         <br></br>
@@ -55,30 +78,15 @@ function Cards() {
           <br></br><br></br>
           <h4>Returns</h4>
           <br></br>
-          An array of card objects with string keys: id, name, rarity, set_name, image
+          An array of card objects with string keys: id, name, rarity, set, image
         </Row>
       </Panel>
     )
 }
 
-
-
-
-const projinfo = [
-  {"title": "Title", "desc": "The project title"},
-  {"title": "Description", "desc": "A brief description of the project"},
-  {"title": "HTTP Route", "desc": "The HTTP Route of the project"},
-  {"title": "Resources", "desc": "A tabled list of HTTP Resources"},
-  {"title": "Query Parameters", "desc": "A optional tabled set of HTTP query parameters"},
-  {"title": "Technologies", "desc": "The technologies used in the project (e.g python)"},
-  {"title": "Libraries", "desc": "The libraries used in the project (e.g pandas)"},
-  {"title": "Data Sources", "desc": "The data sources used for that project (e.g scryfall[4]"},
-  {"title": "Data Storage", "desc": "How and where our transformed data is stored (e.g CSV, Cloud)"},
-]
-
-function CardView() {
+function CardView({cards, changeCell}) {
   return (
-    <Table bordered virtualized height={320} width={800} data={c}>
+    <Table bordered virtualized height={320} width={800} data={cards} onRowClick={changeCell}>
     <Column width={200}>
       <HeaderCell>ID</HeaderCell>
       <Cell dataKey="id"/>
@@ -91,7 +99,7 @@ function CardView() {
 
     <Column width={200}>
       <HeaderCell>SET NAME</HeaderCell>
-      <Cell dataKey="set_name"/>
+      <Cell dataKey="set"/>
     </Column>
 
     <Column width={200}>
