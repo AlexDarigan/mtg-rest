@@ -6,7 +6,7 @@ from statistics import mean, median, mode
 def get_card(card):
     client = bigquery.Client("mtg-rest")
     query = f"""
-    SELECT * FROM `mtg-rest.mtgcards.cards` WHERE name = '{card}'
+    SELECT * FROM `mtg-rest.mtgcards.cards` WHERE name = {card}
     """
     
     execution = client.query(query)

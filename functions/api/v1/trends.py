@@ -9,7 +9,7 @@ def get_price_trend(card_id, start, end):
     SELECT cards.name, cards.id, cards.image, cards.rarity, prices.date, prices.eur, prices.usd
     FROM `mtg-rest.mtgcards.cards` AS cards
     JOIN `mtg-rest.mtgcards.prices` AS prices ON cards.id = prices.id
-    WHERE cards.id = "{card_id}" 
+    WHERE cards.id = {card_id} 
     AND date > PARSE_DATE("%F", "{start}")
     AND date < PARSE_DATE("%F", "{end}")
     """

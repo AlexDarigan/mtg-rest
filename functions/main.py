@@ -13,7 +13,6 @@ initialize_app()
 # v1/color/distribution
 @https_fn.on_request()
 def get_color_distribution(request):
-    # x = datetime.fromisoformat("20230101").date().isoformat()
     start = datetime.fromisoformat(request.args.get("start", "20030101")).date().isoformat()
     end = datetime.fromisoformat(request.args.get("end", datetime.now().isoformat())).date().isoformat()
     result = measures.get_color_measures(start=start, end=end)
