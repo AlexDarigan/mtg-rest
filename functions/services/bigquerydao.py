@@ -61,7 +61,7 @@ def update_prices(prices):
     merge_job = f"""
         MERGE INTO prices
         USING daily_prices AS staging
-        ON prices.id = staging.id AND prices.date = {str(datetime.today().date())} AND prices.date > DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY);
+        ON prices.id = staging.id AND prices.date = PARSE_DATE('%F', "{str(datetime.today().date())}") AND prices.date > DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)
         WHEN NOT MATCHED THEN
             INSERT (id, date, eur, usd)
             VALUES (staging.id, staging.date, staging.eur, staging.usd)
