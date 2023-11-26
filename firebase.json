@@ -19,6 +19,10 @@
         "function": "get_color_distribution"
       },
       {
+        "source": "/api/v1/card",
+        "function": "get_card"
+      },
+      {
         "source": "/api/v1/price/trend",
         "function": "get_price_trends"
       }

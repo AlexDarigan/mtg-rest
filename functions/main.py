@@ -1,7 +1,7 @@
 from firebase_admin import initialize_app
 from firebase_functions import options, scheduler_fn, https_fn, pubsub_fn
 from services import gatherer, preprocessor, publisher, dao, bigquerydao, bq_preprocessor
-from api.v1 import measures, trends
+from api.v1 import measures, trends, cards
 from concurrent.futures import wait
 from datetime import datetime
 import json
@@ -17,6 +17,13 @@ def get_color_distribution(request):
     start = datetime.fromisoformat(request.args.get("start", "20030101")).date().isoformat()
     end = datetime.fromisoformat(request.args.get("end", datetime.now().isoformat())).date().isoformat()
     result = measures.get_color_measures(start=start, end=end)
+    return json.dumps(result)
+
+# v1/card
+@https_fn.on_request()
+def get_card(request):
+    cardname = request.args.get("name")
+    result = cards.get_card(cardname)
     return json.dumps(result)
     
 # v1/price/trend?=name
