@@ -55,4 +55,6 @@ def on_cards_published(event):
 
 @scheduler_fn.on_schedule(schedule="0 3 * * *")
 def update_big_query(event):
-    bigquerydao.update_all(bq_preprocessor.transform(gatherer.fetch_cards("https://api.scryfall.com/bulk-data/default-cards")))
+    cards, prices = bq_preprocessor.transform(gatherer.fetch_cards("https://api.scryfall.com/bulk-data/default-cards"))
+    bigquerydao.update_cards(cards)
+    bigquerydao.update_prices(prices)

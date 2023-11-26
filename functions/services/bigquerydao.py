@@ -1,6 +1,6 @@
 from google.cloud import bigquery
 
-def update_all(cards):
+def update_cards(cards):
     client = bigquery.Client("mtg-rest")
     config = bigquery.LoadJobConfig(
         schema = [
@@ -27,5 +27,47 @@ def update_all(cards):
     job = client.load_table_from_json(json_rows=cards, destination="mtgcards.cards", project="mtg-rest", job_config=config)
     try:
         result = job.result()
+    except:
+        print(job.errors)
+
+def update_prices(prices):
+    
+    # ADD TO DAILY PRICES
+    client = bigquery.Client(project="mtg-rest")
+    config = bigquery.LoadJobConfig(
+        schema = [
+            bigquery.SchemaField("id", "STRING", "REQUIRED"),
+            bigquery.SchemaField("date", "DATE", "REQUIRED"),
+            bigquery.SchemaField("eur", "FLOAT", "REQUIRED"),
+            bigquery.SchemaField("usd", "FLOAT", "REQUIRED")
+        ],
+        autodetect=False,
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+        source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+)
+
+    job = client.load_table_from_json(json_rows=prices, destination="mtgcards.daily_prices", project="mtg-rest", job_config=config)
+    try:
+        result = job.result()
+    except:
+        print(job.errors)
+        
+    # Merge With All Prices
+    config = bigquery.QueryJobConfig(
+        default_dataset="mtg-rest.mtgcards",
+)
+    
+    merge_job = f"""
+        MERGE INTO prices
+        USING daily_prices AS staging
+        ON prices.id = staging.id AND prices.date = {str(datetime.today().date())}
+        WHEN NOT MATCHED THEN
+            INSERT (id, date, eur, usd)
+            VALUES (staging.id, staging.date, staging.eur, staging.usd)
+    """
+
+    client.query(merge_job, job_config=config, project="mtg-rest")
+    try:
+        r2 = job.result()
     except:
         print(job.errors)

@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from datetime import datetime
+from google.cloud import bigquery
 
 def fetch_cards(url):
     response = requests.get(url)
@@ -39,7 +40,6 @@ def extract_types(type_line, secondary):
         # ..then there is no secondary types
         return []
     return extracted
-
 
 def transform(data):
     # df = pd.json_normalize(data)
@@ -90,21 +90,25 @@ def transform(data):
     df["primary"] = df["type_line"].apply(lambda x: extract_types(x, secondary=False))
     df["secondary"] = df["type_line"].apply(lambda x: extract_types(x, secondary=True))    
     
-    
-    # get prices
-    # df["eur"] = pd.to_numeric(df["prices"].astype(dict).get("eur"), errors="coerce") #.fillna("0.0")
-    # # df["usd"] = pd.to_numeric(df["prices"].astype(dict).get("usd"), errors="coerce") #.fillna("0.0")
+    # get prices & date
+    df["date"] = str(datetime.today().date())
     df["eur"] = df["prices"].apply(lambda x: dict(x).get("eur"))
     df["usd"] = df["prices"].apply(lambda x: dict(x).get("usd"))
+    df["eur"] = pd.to_numeric(df["eur"], errors="coerce").fillna(0.0)
+    df["usd"] = pd.to_numeric(df["usd"], errors="coerce").fillna(0.0)
+    
     
     df["image"] = df["image_uris"].apply(lambda x: dict(x).get("png"))
 
-    # Selecting only necessary columns
-    df = pd.DataFrame(data=df, columns=["id", "name", "released", "uri", "cmc", "colors", "primary", "secondary",
+    # Creating cards json
+    cards_df = pd.DataFrame(data=df, columns=["id", "name", "released", "uri", "cmc", "colors", "primary", "secondary",
                                             "keywords", "legalities", "set_id", "rarity", "set_name", "image",
                                             ])
-
-    cards = df.to_dict(orient="records")
+    cards = cards_df.to_dict(orient="records")
     for card in cards:
         card["cmc"] = int(card["cmc"])
-    return cards
+        
+    # Creating prices json    
+    prices_df = pd.DataFrame(data=df, columns=["id", "date", "eur", "usd"])
+    prices = prices_df.to_dict(orient="records")
+    return (cards, prices)
