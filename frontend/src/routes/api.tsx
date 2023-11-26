@@ -67,18 +67,10 @@ function API() {
     </PanelGroup>
 
     <PanelGroup accordion bordered style={{fontSize: "1rem"}}>
-      <Panel header={<h2>Card Getter</h2>} bordered>
         <Cards/>
-      </Panel>
-      <Panel header={<h2>Color Distribution</h2>} bordered>
         <ColorDistribution/>
-      </Panel>
-      <Panel header={<h2>Price Trend</h2>} bordered>
         <Trends/>
-      </Panel>
-      <Panel header={<h2>Price Predictions</h2>} bordered>
         <Predictions/>
-      </Panel>
     </PanelGroup>
     </>
   );
