@@ -15,8 +15,8 @@
     "source": "frontend",
     "rewrites": [
       {
-        "source": "/api/v1/measure/color",
-        "function": "get_color_measures"
+        "source": "/api/v1/color/distribution",
+        "function": "get_color_distribution"
       },
       {
         "source": "/api/v1/measure/cardtypes",

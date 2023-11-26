@@ -10,14 +10,13 @@ import json
 options.set_global_options(max_instances=1, memory=options.MemoryOption.GB_4, cpu=2, timeout_sec=540)
 initialize_app()
 
-# API Calls
-# v1/measure/color?start=?&end=?&card_types=?
+# v1/color/distribution
 @https_fn.on_request()
-def get_color_measures(request):
-    start = datetime.fromisoformat(request.args.get("start", "19930805")) # August 5th 1993 - When MTG was released
-    end = datetime.fromisoformat(request.args.get("end", datetime.now().isoformat()))
-    cardtypes = request.args.get("types", "A").upper()
-    result = measures.get_color_measures(start=start, end=end, cardtypes=cardtypes)
+def get_color_distribution(request):
+    # x = datetime.fromisoformat("20230101").date().isoformat()
+    start = datetime.fromisoformat(request.args.get("start", "20030101")).date().isoformat()
+    end = datetime.fromisoformat(request.args.get("end", datetime.now().isoformat())).date().isoformat()
+    result = measures.get_color_measures(start=start, end=end)
     return json.dumps(result)
 
 # v1/measure/color?start=?&end=?&colors=?
