@@ -1,29 +1,7 @@
 import { Table, Panel, Col, Row, Input, Button } from "rsuite"
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { RowDataType } from "rsuite/esm/Table";
-import { forEach } from "lodash";
 const { Column, HeaderCell, Cell } = Table;
-
-// Route
-// Example
-// Return (table)
-// Query Parameters
-// Image display
-// Carosel
-
-const c = [{
-  "id": "03290811090-541",
-  "name": "The Fourth Doctor",
-  "art": "https://cards.scryfall.io/png/front/c/8/c84ea0fd-efc7-4614-9f8f-41a3c71fceaa.png?1696636503",
-  "rarity": "Mythic",
-  "set_name": "Doctor Who"
-}]
-
-// const fetcher = useCallback(async () => {
-//   var response = await fetch("https://run.mocky.io/v3/bb21935b-b670-48f8-bf0f-a50d28328ba2")
-//   var data = await response.json()
-//   setText(JSON.stringify(data))
-// }, [])
 
 function Cards() {
     const [art, setArt] = useState("https://i.imgur.com/LdOBU1I.jpeg")
