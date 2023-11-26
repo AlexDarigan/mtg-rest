@@ -33,7 +33,7 @@ function SidebarContent() {
           <Nav activeKey="1">
           <Nav.Item eventKey="1"><Link to="profile">About Me</Link></Nav.Item>
           <Nav.Item eventKey="2"><Link to="report">Data Science Report</Link></Nav.Item>
-          <Nav.Item eventKey="3"><Link to="api">MTG Rest API</Link></Nav.Item>
+          <Nav.Item eventKey="3"><Link to="docs">MTG Rest API</Link></Nav.Item>
           </Nav>
         </Sidenav.Body>
       </Sidenav>    

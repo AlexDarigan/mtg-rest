@@ -26,13 +26,13 @@ def get_card(request):
     result = cards.get_card(cardname)
     return json.dumps(result)
     
-# v1/price/trend?=name
+# v1/price/trend?id=g9r
 @https_fn.on_request()
 def get_price_trends(request):
-    cardname = request.args.get("name")
+    card_id = request.args.get("id")
     start = datetime.fromisoformat(request.args.get("start", "20030101")).date().isoformat()
     end = datetime.fromisoformat(request.args.get("end", datetime.now().isoformat())).date().isoformat()
-    result = trends.get_price_trend(card=cardname, start=start, end=end)
+    result = trends.get_price_trend(card_id=card_id, start=start, end=end)
     return json.dumps(result)
 
 @scheduler_fn.on_schedule(schedule="0 3 * * *")
