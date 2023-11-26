@@ -19,11 +19,7 @@
         "function": "get_color_distribution"
       },
       {
-        "source": "/api/v1/measure/cardtypes",
-        "function": "get_card_type_measures"
-      },
-      {
-        "source": "/api/v1/price/trends",
+        "source": "/api/v1/price/trend",
         "function": "get_price_trends"
       }
     ],
