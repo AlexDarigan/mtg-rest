@@ -24,19 +24,7 @@ function HeaderContent() {
 
 // Two Seperate ones for card prices, get card, then get trend?
 // Same with predictions?
-function APIMenu() {
-return (
-  <Nav.Menu eventKey="3" title="MTG Rest API">
-    <Nav.Item eventKey='3-1'>Introduction</Nav.Item>
-    <Nav.Menu eventKey="4" title="api/v1">
-      <Nav.Item eventKey='3-2'>/color/distribution</Nav.Item>
-      <Nav.Item eventKey="3-1">/price/trend</Nav.Item> 
-      <Nav.Item eventKey="3-2">/price/prediction</Nav.Item>
-    </Nav.Menu>
-   
-  </Nav.Menu>
-  );
-}
+
 
 function SidebarContent() {
   return (
@@ -45,7 +33,7 @@ function SidebarContent() {
           <Nav activeKey="1">
           <Nav.Item eventKey="1"><Link to="profile">About Me</Link></Nav.Item>
           <Nav.Item eventKey="2"><Link to="report">Data Science Report</Link></Nav.Item>
-          <APIMenu/>
+          <Nav.Item eventKey="3"><Link to="api">MTG Rest API</Link></Nav.Item>
           </Nav>
         </Sidenav.Body>
       </Sidenav>    
