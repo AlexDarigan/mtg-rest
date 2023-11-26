@@ -1,4 +1,5 @@
 from google.cloud import bigquery
+from datetime import datetime
 
 def update_cards(cards):
     client = bigquery.Client("mtg-rest")
@@ -56,11 +57,11 @@ def update_prices(prices):
     config = bigquery.QueryJobConfig(
         default_dataset="mtg-rest.mtgcards",
 )
-    
+
     merge_job = f"""
         MERGE INTO prices
         USING daily_prices AS staging
-        ON prices.id = staging.id AND prices.date = {str(datetime.today().date())}
+        ON prices.id = staging.id AND prices.date = {str(datetime.today().date())} AND prices.date > DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY);
         WHEN NOT MATCHED THEN
             INSERT (id, date, eur, usd)
             VALUES (staging.id, staging.date, staging.eur, staging.usd)

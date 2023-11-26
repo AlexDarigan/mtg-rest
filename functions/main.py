@@ -36,21 +36,21 @@ def get_price_trends(request):
     result = trends.get_price_trend(cardname)
     return json.dumps(result)
 
-# Scheduled Function for data processing
-@scheduler_fn.on_schedule(schedule="0 3 * * *")
-def publish_cards(event):
-    run = dao.begin_run()
-    data = gatherer.fetch_cards("https://api.scryfall.com/bulk-data/default-cards")
-    cards = preprocessor.transform(data)
-    wait(publisher.publish(run.id, cards)) 
-    dao.end_run(run)
+# # Scheduled Function for data processing
+# @scheduler_fn.on_schedule(schedule="0 3 * * *")
+# def publish_cards(event):
+#     run = dao.begin_run()
+#     data = gatherer.fetch_cards("https://api.scryfall.com/bulk-data/default-cards")
+#     cards = preprocessor.transform(data)
+#     wait(publisher.publish(run.id, cards)) 
+#     dao.end_run(run)
         
-@pubsub_fn.on_message_published(topic="cards")
-def on_cards_published(event):
-    data = event.data.message.json
-    chunk = dao.begin_run_chunk(data)
-    dao.add_card_batch(data["chunk"])
-    dao.end_run_chunk(chunk)
+# @pubsub_fn.on_message_published(topic="cards")
+# def on_cards_published(event):
+#     data = event.data.message.json
+#     chunk = dao.begin_run_chunk(data)
+#     dao.add_card_batch(data["chunk"])
+#     dao.end_run_chunk(chunk)
 
 
 @scheduler_fn.on_schedule(schedule="0 3 * * *")
