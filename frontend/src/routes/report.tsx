@@ -66,7 +66,7 @@ function Report() {
     <br></br>
     <p>
       On the <Link to="docs">MTG Rest API</Link> page, you will find three seperate projects that allow for data visualization, through
-      a WEB GUI.
+      a WEB GUI. The charts were created using <a href="https://plotly.com/javascript/react/">react-plotly.js</a>
     </p>
     	<br></br>
       <ul>
