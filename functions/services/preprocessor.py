@@ -35,21 +35,27 @@ def transform(data):
     # Creating our initial data
     df = pd.DataFrame(data)
 
-    # Dropping digital-only cards because digital scarcity can cause problems
+    # Digital Games do not have a secondary market, so we're..
+    # ..only interested in cards that have a real-life "paper" version
     df = df[df.games.apply(lambda games: "paper" in games)]
     
-    # Dropping any cards released before 2003 (when modern become codified)
+    # Competitive tournaments were codified in 2003, so we are dropping any card before that..
+    # ..because their prices will be affected for historical reasons other than for their game mechanics
     df = df[df.released_at.apply(lambda release: datetime.fromisoformat(release).year >= 2003)]
     
-    # Dropping Double-Faced Cards
+    # About 1000~ cards have two faces, 1000 is a drop in the bucket compared to the amount of..
+    # ..cards being processed, so they are dropped for ease of handling
     df = df[df.name.apply(lambda x: "//" not in x)]
     
-    # Dropping "Un" Joke Sets
+    # Any card expansion set that begins with "Un" in its name, is a joke set..
+    # ..which is illegal for competitive play
     df = df[df.set_name.apply(lambda set_name: not set_name.startswith("Un"))]
     
     # Dropping Basic Lands && Tokens
+    # Tokens aren't cards, Basic Lands don't have any meaningful value
     df = df[df.type_line.apply(lambda type_line: "Basic Land" not in type_line and "Token" not in type_line)]
     
+    # Only 3 formats out of 30~ affect prices significantly
     df["legalities"] = df["legalities"].apply(get_legal_formats)
     
     # Dropping any card which is not legal in any format
@@ -57,25 +63,21 @@ def transform(data):
     # of special edition or alt format cards that were never legal
     df = df[df["legalities"].apply(lambda legality: len(legality) != 0)]
     
-    # Dropping promotional cards
+    # Dropping promotional, reprints, reserved, variants & oversized cards
+    # ..all of these cards are variants of a "regular" card that already exists
+    # ..you probably don't need a chart to understand that promo cards may affect prices
+    # ..so we're more interested in the prices of the "base" card
     df = df[df["promo"].apply(lambda promo: not promo)]
-
-    # Dropping reprints    
     df = df[df["reprint"].apply(lambda reprint: not reprint)]
-    
-    # Dropping reserved cards
     df = df[df["reserved"].apply(lambda reserved: not reserved)]
-    
-    # Dropping special variants
     df = df[df["variation"].apply(lambda variation: not variation)]
-    
-    # Dropping oversized cards
     df = df[df["oversized"].apply(lambda oversized: not oversized)]
     
-    # Simple Conversions
+    # JSON and Pandas dates don't get along great
     df["released"] = pd.to_datetime(df["released_at"], errors='coerce').astype(str)
     df["cmc"] = pd.to_numeric(df["cmc"], errors='coerce').fillna(0)
 
+    # extracting the primary and secondary type arrays from the card type_line string
     df["primary"] = df["type_line"].apply(lambda x: extract_types(x, secondary=False))
     df["secondary"] = df["type_line"].apply(lambda x: extract_types(x, secondary=True))    
     
@@ -86,13 +88,16 @@ def transform(data):
     df["eur"] = pd.to_numeric(df["eur"], errors="coerce").fillna(0.0)
     df["usd"] = pd.to_numeric(df["usd"], errors="coerce").fillna(0.0)
     
-    
+    # getting a high-res png image link, useful for some visualization
     df["image"] = df["image_uris"].apply(lambda x: dict(x).get("png"))
 
-    # Creating cards json
+    # Dropped to 14 columns from 85 columns
+    # ..You can see all fields at https://scryfall.com/docs/api/cards
     cards_df = pd.DataFrame(data=df, columns=["id", "name", "released", "uri", "cmc", "colors", "primary", "secondary",
                                             "keywords", "legalities", "set_id", "rarity", "set_name", "image",
                                             ])
+    
+    # Dataframe to dict
     cards = cards_df.to_dict(orient="records")
     for card in cards:
         card["cmc"] = int(card["cmc"])
@@ -100,4 +105,6 @@ def transform(data):
     # Creating prices json    
     prices_df = pd.DataFrame(data=df, columns=["id", "date", "eur", "usd"])
     prices = prices_df.to_dict(orient="records")
+    
+    # Return two seperate dicts from the dataframe for storage
     return (cards, prices)

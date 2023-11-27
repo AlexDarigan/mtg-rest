@@ -2,6 +2,7 @@ import { Panel } from "rsuite"
 import { Link } from "react-router-dom";
 import Card from "../assets/card.png"
 import MergeCode from "../assets/merge.png"
+import Carbon from "../assets/carbon.png"
 
 const REST = "https://restfulapi.net/"
 const MTG = "https://www.mopop.org/resources/archive/landing-pages/science-fiction-and-fantasy-hall-of-fame/sffhof-members/magic-the-gathering/"
@@ -19,7 +20,8 @@ const hosting = "https://firebase.google.com/docs/hosting"
 const functions = "https://firebase.google.com/docs/functions"
 const schedule = "https://firebase.google.com/docs/functions/schedule-functions?gen=2nd"
 const BigQuery = "https://cloud.google.com/bigquery?hl=en"
-
+const pandas = "https://pandas.pydata.org/"
+const processor = "https://github.com/AlexDarigan/mtg-rest/blob/main/functions/services/preprocessor.py"
 
 function Report() { 
   return (
@@ -59,9 +61,14 @@ function Report() {
 
     <h2>Data Preprocessing</h2>
     <br></br>
-    <p>Content</p>
+    <p>
+      This project uses <a href={pandas}>Pandas</a> to preprocess data. You can find the preprocessor python script <a href={processor}>here</a>. 
+      I've decided to use an image of the code below as the best way to detail the data preprocessing decisions
+    </p>
     <br></br>
-
+    <img src={Carbon} width="1000px"></img>
+    <br></br>
+    <br></br>
     <h2>Exploratory Data / Data Visualizations</h2>
     <br></br>
     <p>
