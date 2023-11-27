@@ -1,7 +1,4 @@
-from firebase_admin import initialize_app, firestore
 from google.cloud import bigquery
-from datetime import datetime
-from statistics import mean, median, mode
 
 def get_card(card):
     client = bigquery.Client("mtg-rest")

@@ -1,6 +1,4 @@
 from google.cloud import bigquery
-from datetime import datetime
-from statistics import mean, median, mode
 
 def get_price_trends(card, start, end):
     client = bigquery.Client("mtg-rest")

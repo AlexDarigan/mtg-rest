@@ -1,59 +1,75 @@
-import time
+from google.cloud import bigquery
 from datetime import datetime
-from firebase_admin import initialize_app, firestore
-from google.cloud.firestore_v1.base_query import FieldFilter, And
 
+UPDATE_JOB_SCHEMA = [
+            bigquery.SchemaField("id", "STRING", "REQUIRED"),
+            bigquery.SchemaField("name", "STRING", "REQUIRED"),
+            bigquery.SchemaField("uri", "STRING"),
+            bigquery.SchemaField("cmc", "INTEGER"),
+            bigquery.SchemaField("colors", "STRING", "REPEATED"),
+            bigquery.SchemaField("primary", "STRING", "REPEATED"),
+            bigquery.SchemaField("secondary", "STRING", "REPEATED"),
+            bigquery.SchemaField("keywords", "STRING", "REPEATED"),
+            bigquery.SchemaField("legalities", "STRING", "REPEATED"),
+            bigquery.SchemaField("set_id", "STRING"),
+            bigquery.SchemaField("set_name", "STRING"),
+            bigquery.SchemaField("image", "STRING"),
+            bigquery.SchemaField("rarity", "STRING"),
+            bigquery.SchemaField("released", "DATE")
+]
 
-def begin_run():
-    db = firestore.client()
-    _, run = db.collection("run").add({"start": firestore.SERVER_TIMESTAMP})
-    return run
+UPDATE_PRICES_SCHEMA = [
+    bigquery.SchemaField("id", "STRING", "REQUIRED"),
+    bigquery.SchemaField("date", "DATE", "REQUIRED"),
+    bigquery.SchemaField("eur", "FLOAT", "REQUIRED"),
+    bigquery.SchemaField("usd", "FLOAT", "REQUIRED")
+]
 
-def end_run(run):
-    #db = firestore.client()
-    run.update({"end": firestore.SERVER_TIMESTAMP})
+def update_cards(cards):
+    client = bigquery.Client("mtg-rest")
+    config = bigquery.LoadJobConfig(
+        schema = UPDATE_JOB_SCHEMA, 
+        autodetect=False, 
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+        source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
+    )
+    job = client.load_table_from_json(json_rows=cards, destination="mtgcards.cards", project="mtg-rest", job_config=config)
+    try:
+        _ = job.result()
+    except:
+        print(job.errors)
 
-def begin_run_chunk(chunked):
-    db = firestore.client()
-    _, chunk = (db.collection("run")
-                    .document(chunked["runId"])
-                    .collection("chunks")
-                    .add({
-                        "start": firestore.SERVER_TIMESTAMP, 
-                        "chunkId": chunked["count"], 
-                        "batch_count": chunked["batch_count"],
-                        "start": time.time()
-                    }))
-    return chunk
-
-def end_run_chunk(chunk):
-    chunk.update({"end": firestore.SERVER_TIMESTAMP, "took": time.time() - chunk.get().to_dict()["start"]})
-
-def add_card_batch(chunked):
-    db = firestore.client()
-    cards = db.collection("cards")
+def update_prices(prices):
     
-    batch = db.batch()
-    for doc in chunked:
-        card = cards.document(doc["id"])
+    # ADD TO DAILY PRICES
+    client = bigquery.Client(project="mtg-rest")
+    config = bigquery.LoadJobConfig(
+        schema = UPDATE_PRICES_SCHEMA,
+        autodetect=False,
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+        source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+)
+
+    job = client.load_table_from_json(json_rows=prices, destination="mtgcards.daily_prices", project="mtg-rest", job_config=config)
+    try:
+        result = job.result()
+    except:
+        print(job.errors)
         
-        # Convert json string back to timestamp
-        doc["released"] = datetime.fromisoformat(doc["released"])
+    # Merge With All Prices
+    config = bigquery.QueryJobConfig(default_dataset="mtg-rest.mtgcards")
 
-        batch.set(card, doc, merge=True)
-    batch.commit()
-    
-def get_cards_released_between(start, end):
-    start = datetime.fromisoformat(start)
-    end = datetime.fromisoformat(end)
-    db = firestore.client()
-    query = (db.collection("cards")
-     .where(filter=FieldFilter("released", ">", start))
-     .where(filter=FieldFilter("released", "<", end))
-     .stream())
-    start = time.time()
-    for doc in query:
-        print(doc.id)
-    print(query)
-    print("TOOK: ", time.time() - start)
-    return query
+    merge_job = f"""
+        MERGE INTO prices
+        USING daily_prices AS staging
+        ON prices.id = staging.id AND prices.date = PARSE_DATE('%F', "{str(datetime.today().date())}") AND prices.date > DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)
+        WHEN NOT MATCHED THEN
+            INSERT (id, date, eur, usd)
+            VALUES (staging.id, staging.date, staging.eur, staging.usd)
+    """
+
+    client.query(merge_job, job_config=config, project="mtg-rest")
+    try:
+        _ = job.result()
+    except:
+        print(job.errors)

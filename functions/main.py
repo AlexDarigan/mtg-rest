@@ -1,8 +1,7 @@
 from firebase_admin import initialize_app
-from firebase_functions import options, scheduler_fn, https_fn, pubsub_fn
-from services import gatherer, preprocessor, publisher, dao, bigquerydao, bq_preprocessor
+from firebase_functions import options, scheduler_fn, https_fn
+from services import gatherer, preprocessor, dao
 from api.v1 import measures, trends, cards
-from concurrent.futures import wait
 from datetime import datetime
 import json
 
@@ -36,6 +35,6 @@ def get_price_trends(request):
 
 @scheduler_fn.on_schedule(schedule="0 3 * * *")
 def update_big_query(event):
-    cards, prices = bq_preprocessor.transform(gatherer.fetch_cards("https://api.scryfall.com/bulk-data/default-cards"))
-    bigquerydao.update_cards(cards)
-    bigquerydao.update_prices(prices)
+    cards, prices = preprocessor.transform(gatherer.fetch_cards("https://api.scryfall.com/bulk-data/default-cards"))
+    dao.update_cards(cards)
+    dao.update_prices(prices)
