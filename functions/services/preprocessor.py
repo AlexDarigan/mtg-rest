@@ -2,22 +2,10 @@ import pandas as pd
 import requests
 from datetime import datetime
 
-def fetch_cards(url):
-    response = requests.get(url)
-    if response.status_code != 200:
-        print("get_json: ", str(response.status_code), flush=True)
-        print(datetime.now(), ": Request Error on Bulk Data", response.status_code, flush=True)
-    data = response.json()
-
-    # DOWNLOAD CARD DATA
-    download = data["download_uri"]
-    downloaded = requests.get(download, stream=True)
-    if downloaded.status_code != 200:
-        print(datetime.now(), ": Request Error on Download:", downloaded.status_code, flush=True)
-    cards = downloaded.json()
-    return cards
 
 def get_legal_formats(legalities):
+    # There about 30+ different game format in Magic: The Gathering, 
+    # ..however only standard, modern and commander significantly affect card prices
     retval = []
     for format in ["standard", "modern", "commander"]:
         if legalities[format] == "legal":
@@ -25,6 +13,8 @@ def get_legal_formats(legalities):
     return retval
 
 def extract_types(type_line, secondary):
+    # Splitting the primary card types (land, creature, artifact, enchantment, sorcery, instant)..
+    # ..from the secondary card types (saga, human, elf, dragon etc)
     types = type_line.split(" ")
     extracted = []
     if secondary:
@@ -41,11 +31,11 @@ def extract_types(type_line, secondary):
     return extracted
 
 def transform(data):
-    # df = pd.json_normalize(data)
-    #df.columns()
+
+    # Creating our initial data
     df = pd.DataFrame(data)
 
-    # Dropping digital-only cards
+    # Dropping digital-only cards because digital scarcity can cause problems
     df = df[df.games.apply(lambda games: "paper" in games)]
     
     # Dropping any cards released before 2003 (when modern become codified)
