@@ -68,7 +68,7 @@ function Trends() {
             <Col>The starting date of the trend as YYYYMMDD</Col>
           </Row>
           <Row>
-            <Col><b>id</b></Col>
+            <Col><b>End</b></Col>
             <Col>The ending date of the trend as YYYYMMDD</Col>
           </Row>
           <br></br>
