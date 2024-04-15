@@ -14,9 +14,11 @@
     <canvas id="myCanvas" width="28" height="28"></canvas>
     <button onclick="getData()">Predict</button>
     <script>
+
         window.onload = function() {
             var canvas = document.getElementById('myCanvas');
             var context = canvas.getContext('2d');
+            context.filter = 'grayscale(1)';
             var isDrawing = false;
 
             canvas.addEventListener('mousedown', function(event) {
@@ -48,21 +50,23 @@
         async function getData() {
             var canvas = document.getElementById('myCanvas');
             var context = canvas.getContext('2d');
-            var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-            var data = imgData.data;
-            var mnistData = [];
+            var imgData = context.getImageData(0, 0, 28, 28)
+            var pixels = imgData.data;
+            var greyed = []
 
-            console.log(data)
+            console.log(pixels.length / 4)
+            var g = 0
+            for (var i = 0; i < pixels.length; i += 4) {
+              let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
+              if(lightness > 0) {
+                greyed[g] = 1
+              } else {
+                greyed[g] = 0
+              }
+              g++
+              }
 
-            // Convert RGBA to grayscale
-            for (var i = 0; i < data.length; i += 4) {
-                var grayscale = (data[i] + data[i + 1] + data[i + 2]) / 3; // Average of R, G, B values
-                mnistData.push(grayscale / 255); // Normalize pixel values to range [0, 1]
-            }
-
-            // Print data in MNIST-compatible format
-            console.log(mnistData);
-
+            console.log(greyed.length)
             const request = {
               method: "post",
               mode: "cors",
@@ -71,7 +75,7 @@
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                "number": mnistData
+                "raw": greyed
               })
             }
             const response = await fetch("/test", request)
