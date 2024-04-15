@@ -5,7 +5,14 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ]
+    ],
+    "rewrites": [ {
+      "source": "/test",
+      "function": {
+        "functionId": "on_request_example"
+      }
+    } ]
+  
   },
   "functions": [
     {
